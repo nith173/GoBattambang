@@ -10,7 +10,7 @@ use App\Livewire\Admin\Dashboard;
 use App\Livewire\Admin\Destinations\DestinationList;
 use App\Livewire\TestComponent;
 use Illuminate\Support\Facades\Route;
-
+use App\Livewire\Admin\Categories\CategoryView;
 
 Route::get('/', function () {
     return redirect()->route('admin.dashboard');
@@ -44,6 +44,9 @@ Route::get('/admin/categories/create', CategoryForm::class)
 
 Route::get('/admin/categories/{categoryId}/edit', CategoryForm::class)
     ->name('admin.categories.edit');
+
+Route::get('/admin/categories/{categoryId}', CategoryView::class)
+    ->name('admin.categories.view');
 
 Route::get('/admin/users', UserList::class)
     ->name('admin.users');

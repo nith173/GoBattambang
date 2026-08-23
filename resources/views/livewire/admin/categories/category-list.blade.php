@@ -138,14 +138,34 @@
                         </p>
                     </div>
 
-                    <div class="w-full md:w-80">
-                        <input
-                            type="search"
-                            wire:model.live.debounce.300ms="search"
-                            placeholder="Search categories..."
-                            class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                        >
-                    </div>
+                    
+
+<div class="flex w-full flex-col gap-3 md:w-auto md:flex-row">
+<div class="w-full md:w-80">
+    <input
+        type="search"
+        wire:model.live.debounce.300ms="search"
+        placeholder="Search categories..."
+        class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+    >
+</div>
+
+<div class="w-full md:w-52">
+    <select
+        wire:model.live="sort"
+        class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+    >
+        <option value="newest">Newest</option>
+        <option value="oldest">Oldest</option>
+        <option value="name_asc">Name A-Z</option>
+        <option value="name_desc">Name Z-A</option>
+        <option value="most_destinations">Most Destinations</option>
+    </select>
+</div>
+
+</div>
+
+
 
 
 
@@ -251,6 +271,13 @@
 
                                 {{-- Actions --}}
                                 <td class="whitespace-nowrap px-6 py-4 text-right">
+
+                                    <a href="{{ route('admin.categories.view', $category->category_id) }}" 
+                                    wire:navigate 
+                                    class="mr-3 text-sm font-medium text-slate-600 hover:text-slate-800"
+                                >
+                                    View
+                                </a>
 
                                     <a
                                         href="{{ route('admin.categories.edit', $category->category_id) }}"

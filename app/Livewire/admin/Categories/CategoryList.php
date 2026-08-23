@@ -13,7 +13,7 @@ class CategoryList extends Component
     use WithPagination;
 
     public string $search = '';
-
+    public string $sort = 'newest';
     public bool $showConfirmPopup = false;
     public string $confirmAction = '';
     public string $confirmTitle = '';
@@ -28,6 +28,10 @@ class CategoryList extends Component
     public ?int $selectedCategoryId = null;
 
     public function updatingSearch(): void
+    {
+        $this->resetPage();
+    }
+    public function updatingSort(): void
     {
         $this->resetPage();
     }
@@ -143,8 +147,13 @@ class CategoryList extends Component
                     $subQuery
                         ->where('name', 'like', '%' . $this->search . '%')
                         ->orWhere('description', 'like', '%' . $this->search . '%');
-                });})
-            ->orderBy('category_id')
+                });
+            })
+            ->when($this->sort === 'newest', fn ($query) => $query->orderByDesc('category_id'))
+            ->when($this->sort === 'oldest', fn ($query) => $query->orderBy('category_id'))
+            ->when($this->sort === 'name_asc', fn ($query) => $query->orderBy('name'))
+            ->when($this->sort === 'name_desc', fn ($query) => $query->orderByDesc('name'))
+            ->when($this->sort === 'most_destinations', fn ($query) => $query->orderByDesc('destinations_count'))
             ->paginate(10);
 
         return view('livewire.admin.categories.category-list', [
