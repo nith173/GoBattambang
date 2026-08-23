@@ -5,6 +5,7 @@ use App\Livewire\Admin\Reviews\ReviewList;
 use App\Livewire\Admin\Bookings\BookingList;
 use App\Livewire\Admin\Users\UserList;
 use App\Livewire\Admin\Categories\CategoryList;
+use App\Livewire\Admin\Categories\CategoryForm;
 use App\Livewire\Admin\Dashboard;
 use App\Livewire\Admin\Destinations\DestinationList;
 use App\Livewire\TestComponent;
@@ -37,6 +38,12 @@ Route::get('/admin/destinations/{destinationId}/edit', DestinationForm::class)
 
 Route::get('/admin/categories', CategoryList::class)
     ->name('admin.categories');
+
+Route::get('/admin/categories/create', CategoryForm::class)
+    ->name('admin.categories.create');
+
+Route::get('/admin/categories/{categoryId}/edit', CategoryForm::class)
+    ->name('admin.categories.edit');
 
 Route::get('/admin/users', UserList::class)
     ->name('admin.users');
