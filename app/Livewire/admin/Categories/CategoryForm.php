@@ -168,7 +168,7 @@ if ($this->redirectAfterAlert) {
     ]);
 
     $this->showSuccess('Category updated successfully.');
-
+    $this->redirectAfterAlert = true;
     return;
 }
 
