@@ -125,9 +125,55 @@
             {{-- Table Header --}}
             <div class="border-b border-slate-100 px-6 py-5">
 
+{{-- Summary Cards --}}
+<div class="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
+<div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+    <p class="text-sm font-medium text-slate-500">
+        Total Categories
+    </p>
+
+    <p class="mt-2 text-3xl font-bold text-slate-900">
+        {{ $totalCategories }}
+    </p>
+
+    <p class="mt-1 text-sm text-slate-400">
+        All categories
+    </p>
+</div>
+
+<div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+    <p class="text-sm font-medium text-slate-500">
+        Total Destinations
+    </p>
+
+    <p class="mt-2 text-3xl font-bold text-slate-900">
+        {{ $totalDestinations }}
+    </p>
+
+    <p class="mt-1 text-sm text-slate-400">
+        Across all categories
+    </p>
+</div>
+
+<div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+    <p class="text-sm font-medium text-slate-500">
+        Categories With Destinations
+    </p>
+
+    <p class="mt-2 text-3xl font-bold text-slate-900">
+        {{ $categoriesWithDestinations }}
+    </p>
+
+    <p class="mt-1 text-sm text-slate-400">
+        Currently in use
+    </p>
+</div>
+</div>
+
 
 
                 <div class="flex-col gap-4 md:flex-row md:items-center md:justify-between">
+
                     <div>    
                         <h2 class="text-lg font-semibold text-slate-900">
                             All Categories

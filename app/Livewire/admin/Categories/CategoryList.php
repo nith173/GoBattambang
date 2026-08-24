@@ -141,6 +141,13 @@ class CategoryList extends Component
 
     public function render()
     {
+        $totalCategories = Category::count();
+
+$totalDestinations = Category::withCount('destinations')
+    ->get()
+    ->sum('destinations_count');
+
+$categoriesWithDestinations = Category::has('destinations')->count();
         $categories = Category::withCount('destinations')
             ->when($this->search !== '', function ($query) {
                 $query->where(function ($subQuery) {
@@ -157,7 +164,10 @@ class CategoryList extends Component
             ->paginate(10);
 
         return view('livewire.admin.categories.category-list', [
-            'categories' => $categories,
-        ]);
+    'categories' => $categories,
+    'totalCategories' => $totalCategories,
+    'totalDestinations' => $totalDestinations,
+    'categoriesWithDestinations' => $categoriesWithDestinations,
+]);
     }
 }
