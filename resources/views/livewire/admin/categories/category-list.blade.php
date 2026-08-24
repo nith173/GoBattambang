@@ -126,47 +126,113 @@
             <div class="border-b border-slate-100 px-6 py-5">
 
 {{-- Summary Cards --}}
-<div class="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3">
-<div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-    <p class="text-sm font-medium text-slate-500">
-        Total Categories
-    </p>
+<div class="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+{{-- Total Categories --}}
+<div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+    <div class="flex items-start justify-between">
 
-    <p class="mt-2 text-3xl font-bold text-slate-900">
-        {{ $totalCategories }}
-    </p>
+        <div>
+            <p class="text-sm font-medium text-slate-500">
+                Total Categories
+            </p>
 
-    <p class="mt-1 text-sm text-slate-400">
-        All categories
-    </p>
+            <p class="mt-4 text-3xl font-bold text-slate-900">
+                {{ $totalCategories }}
+            </p>
+
+            <p class="mt-3 text-sm text-slate-400">
+                All categories
+            </p>
+        </div>
+
+        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50">
+            <svg class="h-6 w-6 text-blue-600"
+                 fill="none"
+                 stroke="currentColor"
+                 viewBox="0 0 24 24">
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                />
+            </svg>
+        </div>
+
+    </div>
 </div>
 
-<div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-    <p class="text-sm font-medium text-slate-500">
-        Total Destinations
-    </p>
 
-    <p class="mt-2 text-3xl font-bold text-slate-900">
-        {{ $totalDestinations }}
-    </p>
+{{-- Total Destinations --}}
+<div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+    <div class="flex items-start justify-between">
 
-    <p class="mt-1 text-sm text-slate-400">
-        Across all categories
-    </p>
+        <div>
+            <p class="text-sm font-medium text-slate-500">
+                Total Destinations
+            </p>
+
+            <p class="mt-4 text-3xl font-bold text-slate-900">
+                {{ $totalDestinations }}
+            </p>
+
+            <p class="mt-3 text-sm text-slate-400">
+                Across all categories
+            </p>
+        </div>
+
+        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-50">
+            <svg class="h-6 w-6 text-violet-600"
+                 fill="none"
+                 stroke="currentColor"
+                 viewBox="0 0 24 24">
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 21s6-5.2 6-11a6 6 0 10-12 0c0 5.8 6 11 6 11z"
+                />
+                <circle cx="12" cy="10" r="2" />
+            </svg>
+        </div>
+
+    </div>
 </div>
 
-<div class="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-    <p class="text-sm font-medium text-slate-500">
-        Categories With Destinations
-    </p>
 
-    <p class="mt-2 text-3xl font-bold text-slate-900">
-        {{ $categoriesWithDestinations }}
-    </p>
+{{-- Categories With Destinations --}}
+<div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+    <div class="flex items-start justify-between">
 
-    <p class="mt-1 text-sm text-slate-400">
-        Currently in use
-    </p>
+        <div>
+            <p class="text-sm font-medium text-slate-500">
+                Categories With Destinations
+            </p>
+
+            <p class="mt-4 text-3xl font-bold text-slate-900">
+                {{ $categoriesWithDestinations }}
+            </p>
+
+            <p class="mt-3 text-sm text-slate-400">
+                Currently in use
+            </p>
+        </div>
+
+        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50">
+            <svg class="h-6 w-6 text-emerald-600"
+                 fill="none"
+                 stroke="currentColor"
+                 viewBox="0 0 24 24">
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                />
+            </svg>
+        </div>
+
+    </div>
 </div>
 </div>
 
@@ -243,7 +309,7 @@
                                 Created
                             </th>
 
-                            <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                            <th class="px-6 py-4 text-center text-xs font-semibold uppercase tracking-wider text-slate-500">
                                 Actions
                             </th>
 

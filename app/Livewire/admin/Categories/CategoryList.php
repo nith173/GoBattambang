@@ -161,7 +161,7 @@ $categoriesWithDestinations = Category::has('destinations')->count();
             ->when($this->sort === 'name_asc', fn ($query) => $query->orderBy('name'))
             ->when($this->sort === 'name_desc', fn ($query) => $query->orderByDesc('name'))
             ->when($this->sort === 'most_destinations', fn ($query) => $query->orderByDesc('destinations_count'))
-            ->paginate(10);
+            ->paginate(5);
 
         return view('livewire.admin.categories.category-list', [
     'categories' => $categories,
