@@ -8,15 +8,10 @@
     <div
         class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 px-4"
         wire:click.self="closeConfirmPopup">
+        <div class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
 
-        <div
-            class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
-
-            {{-- Icon --}}
             <div class="flex justify-center pt-7">
-
                 <div class="flex h-14 w-14 items-center justify-center rounded-full bg-blue-100">
-
                     <svg
                         class="h-7 w-7 text-blue-600"
                         fill="none"
@@ -28,14 +23,10 @@
                             stroke-width="2"
                             d="M12 9v2m0 4h.01M10.29 3.86l-7.82 13a2 2 0 001.71 3h15.64a2 2 0 001.71-3l-7.82-13a2 2 0 00-3.42 0z" />
                     </svg>
-
                 </div>
-
             </div>
 
-            {{-- Content --}}
             <div class="px-6 pb-6 pt-5 text-center">
-
                 <h3 class="text-lg font-bold text-slate-900">
                     {{ $confirmTitle }}
                 </h3>
@@ -44,9 +35,7 @@
                     {{ $confirmMessage }}
                 </p>
 
-                {{-- Buttons --}}
                 <div class="mt-6 grid grid-cols-2 gap-3">
-
                     <button
                         type="button"
                         wire:click="closeConfirmPopup"
@@ -59,66 +48,62 @@
                         wire:click="confirmPopupAction"
                         wire:loading.attr="disabled"
                         class="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60">
-                        <span wire:loading.remove wire:target="confirmPopupAction">
+                        <span
+                            wire:loading.remove
+                            wire:target="confirmPopupAction">
                             {{ $confirmButtonText }}
                         </span>
 
-                        <span wire:loading wire:target="confirmPopupAction">
+                        <span
+                            wire:loading
+                            wire:target="confirmPopupAction">
                             Processing...
                         </span>
                     </button>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
     @endif
 
 
-    {{{-- ================================================================ --}}
+    {{-- ================================================================ --}}
     {{-- SUCCESS / ERROR POPUP --}}
     {{-- ================================================================ --}}
 
     @if ($showAlertPopup)
-
     <div
         x-data="{
-            show: true,
-            closePopup() {
-                this.show = false;
-                $wire.closeAlertPopup();
-            }
-        }"
+    show: true,
+    closePopup() {
+        this.show = false;
+        $wire.closeAlertPopup();
+
+        @if ($alertType === 'success')
+            window.location.href = '{{ route('admin.destinations') }}';
+        @endif
+    }
+}"
         x-show="show"
         x-init="
-            @if ($alertType === 'success')
-                setTimeout(() => closePopup(), 3000)
-            @endif
-        "
+    @if ($alertType === 'success')
+        setTimeout(() => closePopup(), 1500)
+    @endif
+"
         x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0 scale-95"
         x-transition:enter-end="opacity-100 scale-100"
-        x-transition:leave="transition ease-in duration-300"
+        x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 scale-100"
         x-transition:leave-end="opacity-0 scale-95"
         class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 px-4">
-
-        <div
-            class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
+        <div class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
 
             <div class="px-6 pb-6 pt-7 text-center">
 
-                {{-- ==================================================== --}}
-                {{-- SUCCESS ICON --}}
-                {{-- ==================================================== --}}
-
+                {{-- Success Icon --}}
                 @if ($alertType === 'success')
-
-                <div
-                    class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
+                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
                     <svg
                         class="h-7 w-7 text-green-600"
                         fill="none"
@@ -131,15 +116,9 @@
                             d="M5 13l4 4L19 7" />
                     </svg>
                 </div>
-
                 @else
-
-                {{-- ================================================= --}}
-                {{-- ERROR ICON --}}
-                {{-- ================================================= --}}
-
-                <div
-                    class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
+                {{-- Error Icon --}}
+                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
                     <svg
                         class="h-7 w-7 text-red-600"
                         fill="none"
@@ -152,160 +131,152 @@
                             d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </div>
-
                 @endif
-
-
-                {{-- ==================================================== --}}
-                {{-- TITLE --}}
-                {{-- ==================================================== --}}
 
                 <h3 class="mt-4 text-lg font-bold text-slate-900">
                     {{ $alertTitle }}
                 </h3>
 
-
-                {{-- ==================================================== --}}
-                {{-- MESSAGE --}}
-                {{-- ==================================================== --}}
-
                 <p class="mt-2 text-sm leading-6 text-slate-500">
                     {{ $alertMessage }}
                 </p>
 
-
-                {{-- ==================================================== --}}
-                {{-- OK BUTTON --}}
-                {{-- ==================================================== --}}
-
+                @if ($alertType !== 'success')
                 <button
                     type="button"
                     x-on:click="closePopup()"
                     class="mt-6 w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700">
                     OK
                 </button>
+                @endif
 
+            </div>
+        </div>
+    </div>
+    @endif
+
+
+    {{-- ================================================================ --}}
+    {{-- PAGE --}}
+    {{-- ================================================================ --}}
+
+    <div class="mx-auto max-w-7xl px-6 py-10">
+
+        {{-- ============================================================ --}}
+        {{-- HEADER --}}
+        {{-- ============================================================ --}}
+
+        <div class="mb-7">
+
+            <a
+                href="{{ route('admin.destinations') }}"
+                class="inline-flex items-center gap-2 text-sm font-medium text-slate-600 transition hover:text-blue-600">
+                <svg
+                    class="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 19l-7-7 7-7" />
+                </svg>
+
+                Back to Destinations
+            </a>
+
+            <div class="mt-5">
+                <h1 class="text-3xl font-bold tracking-tight text-slate-900">
+                    {{ $isEditing ? 'Edit Destination' : 'Add Destination' }}
+                </h1>
+
+                <p class="mt-1 text-sm text-slate-500">
+                    {{ $isEditing
+                        ? 'Update the information for this tourist destination.'
+                        : 'Create a new tourist destination.'
+                    }}
+                </p>
             </div>
 
         </div>
 
-    </div>
 
-    @endif
+        {{-- ============================================================ --}}
+        {{-- VALIDATION ERROR --}}
+        {{-- ============================================================ --}}
 
+        @if ($errors->any())
+        <div class="mb-6 rounded-xl border border-red-200 bg-red-50 px-5 py-4">
+            <div class="flex items-start gap-3">
 
-    {{-- ================================================================ --}}
-    {{-- SESSION SUCCESS --}}
-    {{-- ================================================================ --}}
+                <svg
+                    class="mt-0.5 h-5 w-5 shrink-0 text-red-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 9v4m0 4h.01M10.29 3.86l-7.82 13a2 2 0 001.71 3h15.64a2 2 0 001.71-3l-7.82-13a2 2 0 00-3.42 0z" />
+                </svg>
 
-    @if (session()->has('success'))
-    <div
-        x-data="{ show: true }"
-        x-show="show"
-        x-init="setTimeout(() => show = false, 3000)"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0 translate-x-4"
-        x-transition:enter-end="opacity-100 translate-x-0"
-        x-transition:leave="transition ease-in duration-300"
-        x-transition:leave-start="opacity-100 translate-x-0"
-        x-transition:leave-end="opacity-0 translate-x-4"
-        class="fixed right-6 top-6 z-[9999] flex items-center gap-3 rounded-xl bg-emerald-600 px-5 py-4 text-sm font-medium text-white shadow-lg">
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="2"
-            stroke="currentColor"
-            class="h-5 w-5 shrink-0">
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M9 12.75 11.25 15 15 9.75" />
+                <div>
+                    <p class="text-sm font-semibold text-red-700">
+                        Please correct the following:
+                    </p>
 
-            <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-        </svg>
+                    <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-red-600">
+                        @foreach ($errors->all() as $error)
+                        <li>
+                            {{ $error }}
+                        </li>
+                        @endforeach
+                    </ul>
+                </div>
 
-        <span>{{ session('success') }}</span>
-    </div>
-    @endif
+            </div>
+        </div>
+        @endif
 
 
-    {{-- ================================================================ --}}
-    {{-- VALIDATION --}}
-    {{-- ================================================================ --}}
+        {{-- ============================================================ --}}
+        {{-- FORM --}}
+        {{-- ============================================================ --}}
 
-    @if ($errors->any())
-
-    <div class="mx-6 mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
-
-        <p class="mb-2 text-sm font-semibold text-red-700">
-            Please correct the following:
-        </p>
-
-        <ul class="list-disc space-y-1 pl-5 text-sm text-red-600">
-
-            @foreach ($errors->all() as $error)
-
-            <li>
-                {{ $error }}
-            </li>
-
-            @endforeach
-
-        </ul>
-
-    </div>
-
-    @endif
-
-
-    {{-- ================================================================ --}}
-    {{-- FORM --}}
-    {{-- ================================================================ --}}
-
-    <form
-        wire:submit="save"
-        class="mx-6 my-6">
-
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-
+        <form
+            wire:submit="save"
+            class="space-y-6">
 
             {{-- ======================================================== --}}
-            {{-- LEFT SIDE --}}
+            {{-- DESTINATION INFORMATION + PHOTOS --}}
             {{-- ======================================================== --}}
 
-            <div class="space-y-6 lg:col-span-2">
-
+            <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
 
                 {{-- ==================================================== --}}
-                {{-- BASIC INFORMATION --}}
+                {{-- DESTINATION INFORMATION --}}
                 {{-- ==================================================== --}}
 
-                <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                <div class="rounded-2xl border border-slate-200 bg-white shadow-sm lg:col-span-3">
 
                     <div class="border-b border-slate-200 px-6 py-5">
-
                         <h2 class="text-lg font-semibold text-slate-900">
-                            Basic Information
+                            Destination Information
                         </h2>
 
                         <p class="mt-1 text-sm text-slate-500">
                             Enter the main information about this destination.
                         </p>
-
                     </div>
-
 
                     <div class="space-y-5 p-6">
 
                         {{-- Title --}}
                         <div>
-
                             <label class="mb-2 block text-sm font-medium text-slate-700">
-                                Destination Title
+                                Title
                                 <span class="text-red-500">*</span>
                             </label>
 
@@ -313,42 +284,18 @@
                                 type="text"
                                 wire:model="title"
                                 placeholder="e.g. Phnom Sampov"
-                                class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
+                                class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
 
                             @error('title')
                             <p class="mt-1 text-sm text-red-600">
                                 {{ $message }}
                             </p>
                             @enderror
-
-                        </div>
-
-
-                        {{-- Slug --}}
-                        <div>
-
-                            <label class="mb-2 block text-sm font-medium text-slate-700">
-                                Slug
-                            </label>
-
-                            <input
-                                type="text"
-                                wire:model="slug"
-                                placeholder="Leave empty to generate automatically"
-                                class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
-
-                            @error('slug')
-                            <p class="mt-1 text-sm text-red-600">
-                                {{ $message }}
-                            </p>
-                            @enderror
-
                         </div>
 
 
                         {{-- Category --}}
                         <div>
-
                             <label class="mb-2 block text-sm font-medium text-slate-700">
                                 Category
                                 <span class="text-red-500">*</span>
@@ -356,20 +303,16 @@
 
                             <select
                                 wire:model="category_id"
-                                class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
-
+                                class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
                                 <option value="">
                                     Select a category
                                 </option>
 
                                 @foreach ($categories as $category)
-
                                 <option value="{{ $category->category_id }}">
                                     {{ $category->name }}
                                 </option>
-
                                 @endforeach
-
                             </select>
 
                             @error('category_id')
@@ -377,13 +320,11 @@
                                 {{ $message }}
                             </p>
                             @enderror
-
                         </div>
 
 
                         {{-- Description --}}
                         <div>
-
                             <label class="mb-2 block text-sm font-medium text-slate-700">
                                 Description
                                 <span class="text-red-500">*</span>
@@ -393,20 +334,18 @@
                                 wire:model="description"
                                 rows="5"
                                 placeholder="Describe this destination..."
-                                class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"></textarea>
+                                class="w-full resize-none rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"></textarea>
 
                             @error('description')
                             <p class="mt-1 text-sm text-red-600">
                                 {{ $message }}
                             </p>
                             @enderror
-
                         </div>
 
 
                         {{-- Things To Do --}}
                         <div>
-
                             <label class="mb-2 block text-sm font-medium text-slate-700">
                                 Things to Do
                             </label>
@@ -415,14 +354,18 @@
                                 wire:model="things_to_do"
                                 rows="4"
                                 placeholder="Activities visitors can enjoy..."
-                                class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"></textarea>
+                                class="w-full resize-none rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"></textarea>
 
+                            @error('things_to_do')
+                            <p class="mt-1 text-sm text-red-600">
+                                {{ $message }}
+                            </p>
+                            @enderror
                         </div>
 
 
                         {{-- Things To Prepare --}}
                         <div>
-
                             <label class="mb-2 block text-sm font-medium text-slate-700">
                                 Things to Prepare
                             </label>
@@ -431,292 +374,53 @@
                                 wire:model="things_to_prepare"
                                 rows="4"
                                 placeholder="What should visitors prepare?"
-                                class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"></textarea>
+                                class="w-full resize-none rounded-xl border border-slate-300 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"></textarea>
 
-                        </div>
-
-                    </div>
-
-                </div>
-
-
-                {{-- ==================================================== --}}
-                {{-- LOCATION --}}
-                {{-- ==================================================== --}}
-
-                <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
-
-                    <div class="border-b border-slate-200 px-6 py-5">
-
-                        <h2 class="text-lg font-semibold text-slate-900">
-                            Location
-                        </h2>
-
-                        <p class="mt-1 text-sm text-slate-500">
-                            Provide the destination's location information.
-                        </p>
-
-                    </div>
-
-
-                    <div class="space-y-5 p-6">
-
-                        {{-- Address --}}
-                        <div>
-
-                            <label class="mb-2 block text-sm font-medium text-slate-700">
-                                Address
-                                <span class="text-red-500">*</span>
-                            </label>
-
-                            <textarea
-                                wire:model="address"
-                                rows="3"
-                                placeholder="Destination address"
-                                class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"></textarea>
-
-                            @error('address')
+                            @error('things_to_prepare')
                             <p class="mt-1 text-sm text-red-600">
                                 {{ $message }}
                             </p>
                             @enderror
-
-                        </div>
-
-
-                        {{-- Coordinates --}}
-                        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
-
-                            <div>
-
-                                <label class="mb-2 block text-sm font-medium text-slate-700">
-                                    Latitude
-                                </label>
-
-                                <input
-                                    type="text"
-                                    wire:model="latitude"
-                                    placeholder="e.g. 13.0957"
-                                    class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
-
-                            </div>
-
-
-                            <div>
-
-                                <label class="mb-2 block text-sm font-medium text-slate-700">
-                                    Longitude
-                                </label>
-
-                                <input
-                                    type="text"
-                                    wire:model="longitude"
-                                    placeholder="e.g. 103.2022"
-                                    class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
-
-                            </div>
-
-                        </div>
-
-
-                        {{-- Map Link --}}
-                        <div>
-
-                            <label class="mb-2 block text-sm font-medium text-slate-700">
-                                Google Maps Link
-                            </label>
-
-                            <input
-                                type="url"
-                                wire:model="map_link"
-                                placeholder="https://maps.google.com/..."
-                                class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
-
                         </div>
 
                     </div>
-
                 </div>
 
 
                 {{-- ==================================================== --}}
-                {{-- ADDITIONAL INFORMATION --}}
+                {{-- DESTINATION PHOTOS --}}
                 {{-- ==================================================== --}}
 
-                <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+                <div class="rounded-2xl border border-slate-200 bg-white shadow-sm lg:col-span-2">
 
                     <div class="border-b border-slate-200 px-6 py-5">
 
-                        <h2 class="text-lg font-semibold text-slate-900">
-                            Additional Information
-                        </h2>
-
-                    </div>
-
-
-                    <div class="space-y-5 p-6">
-
-                        {{-- Ticket --}}
-                        <div>
-
-                            <label class="mb-2 block text-sm font-medium text-slate-700">
-                                Ticket Price
-                            </label>
-
-                            <div class="flex items-center gap-3">
-
-                                <div class="flex-1">
-
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        min="0"
-                                        wire:model="ticket_price"
-                                        @disabled($isFree)
-                                        placeholder="Enter ticket price"
-                                        class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 disabled:bg-slate-100 disabled:text-slate-400">
-
-                                </div>
-
-                                <span class="text-sm text-slate-500">
-                                    USD
-                                </span>
-
-                            </div>
-
-
-                            <label class="mt-3 flex cursor-pointer items-center gap-2">
-
-                                <input
-                                    type="checkbox"
-                                    wire:model="isFree"
-                                    class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
-
-                                <span class="text-sm text-slate-600">
-                                    Free / No ticket required
-                                </span>
-
-                            </label>
-
-                            @error('ticket_price')
-                            <p class="mt-1 text-sm text-red-600">
-                                {{ $message }}
-                            </p>
-                            @enderror
-
-                        </div>
-
-
-                        {{-- Contact --}}
-                        <div>
-
-                            <label class="mb-2 block text-sm font-medium text-slate-700">
-                                Contact Phone
-                            </label>
-
-                            <input
-                                type="text"
-                                wire:model="contact_phone"
-                                placeholder="+855 ..."
-                                class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
-
-                        </div>
-
-
-                        {{-- Opening --}}
-                        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+                        <div class="flex items-center justify-between gap-3">
 
                             <div>
+                                <h2 class="text-lg font-semibold text-slate-900">
+                                    Destination Photos
+                                </h2>
 
-                                <label class="mb-2 block text-sm font-medium text-slate-700">
-                                    Opening Time
-                                </label>
-
-                                <input
-                                    type="time"
-                                    wire:model="open_time"
-                                    class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
-
+                                <p class="mt-1 text-sm text-slate-500">
+                                    Upload up to 10 photos.
+                                </p>
                             </div>
 
-
-                            <div>
-
-                                <label class="mb-2 block text-sm font-medium text-slate-700">
-                                    Closing Time
-                                </label>
-
-                                <input
-                                    type="time"
-                                    wire:model="close_time"
-                                    class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
-
-                            </div>
+                            <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+                                {{ count($existingPhotos) + count($photos) }}/10
+                            </span>
 
                         </div>
-
-
-                        {{-- Status --}}
-                        <div>
-
-                            <label class="mb-2 block text-sm font-medium text-slate-700">
-                                Status
-                                <span class="text-red-500">*</span>
-                            </label>
-
-                            <select
-                                wire:model="status"
-                                class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
-
-                                <option value="active">
-                                    Active
-                                </option>
-
-                                <option value="inactive">
-                                    Inactive
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            {{-- ======================================================== --}}
-            {{-- RIGHT SIDE --}}
-            {{-- ======================================================== --}}
-
-            <div class="space-y-6">
-
-
-                {{-- ==================================================== --}}
-                {{-- PHOTOS --}}
-                {{-- ==================================================== --}}
-
-                <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
-
-                    <div class="border-b border-slate-200 px-6 py-5">
-
-                        <h2 class="text-lg font-semibold text-slate-900">
-                            Destination Photos
-                        </h2>
-
-                        <p class="mt-1 text-sm text-slate-500">
-                            Upload up to 10 photos.
-                        </p>
-
                     </div>
 
 
                     <div class="p-6">
 
+                        {{-- ================================================= --}}
+                        {{-- EXISTING PHOTOS --}}
+                        {{-- ================================================= --}}
 
-                        {{-- Existing Photos --}}
                         @if ($isEditing && !empty($existingPhotos))
 
                         <div class="mb-6">
@@ -724,7 +428,7 @@
                             <div class="mb-3 flex items-center justify-between">
 
                                 <h3 class="text-sm font-semibold text-slate-700">
-                                    Existing Photos
+                                    Uploaded Photos
                                 </h3>
 
                                 <span class="text-xs text-slate-500">
@@ -738,7 +442,9 @@
 
                                 @foreach ($existingPhotos as $image)
 
-                                <div class="relative overflow-hidden rounded-lg border border-slate-200">
+                                <div
+                                    wire:key="existing-photo-{{ $image['image_id'] }}"
+                                    class="group relative overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
 
                                     <img
                                         src="{{ $image['image_url'] }}"
@@ -749,7 +455,7 @@
                                     {{-- Primary --}}
                                     @if ($image['is_primary'])
 
-                                    <span class="absolute left-2 top-2 rounded-full bg-blue-600 px-2 py-1 text-xs font-medium text-white">
+                                    <span class="absolute left-2 top-2 rounded-full bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white shadow-sm">
                                         Primary
                                     </span>
 
@@ -758,7 +464,7 @@
                                     <button
                                         type="button"
                                         wire:click="setPrimaryPhoto({{ $image['image_id'] }})"
-                                        class="absolute left-2 top-2 rounded-full bg-white px-2 py-1 text-xs font-medium text-slate-700 shadow hover:bg-blue-50">
+                                        class="absolute left-2 top-2 rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-sm transition hover:bg-blue-50 hover:text-blue-700">
                                         Set Primary
                                     </button>
 
@@ -769,7 +475,8 @@
                                     <button
                                         type="button"
                                         wire:click="deleteExistingPhoto({{ $image['image_id'] }})"
-                                        class="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-red-600 shadow hover:bg-red-50">
+                                        class="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-lg leading-none text-red-600 shadow-sm transition hover:bg-red-50"
+                                        title="Delete photo">
                                         ×
                                     </button>
 
@@ -778,14 +485,25 @@
                                 @endforeach
 
                             </div>
-
                         </div>
 
                         @elseif ($isEditing)
 
-                        <div class="mb-6 rounded-lg bg-slate-50 px-4 py-4 text-center">
+                        <div class="mb-6 rounded-xl bg-slate-50 px-4 py-5 text-center">
 
-                            <p class="text-sm font-medium text-slate-600">
+                            <svg
+                                class="mx-auto h-8 w-8 text-slate-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="1.7"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 16M14 8h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+
+                            <p class="mt-2 text-sm font-medium text-slate-600">
                                 No photos uploaded yet.
                             </p>
 
@@ -794,66 +512,113 @@
                         @endif
 
 
-                        {{-- Upload --}}
-                        <label class="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-8 text-center transition hover:border-blue-400 hover:bg-blue-50">
+                        {{-- ================================================= --}}
+                        {{-- UPLOAD AREA --}}
+                        {{-- ================================================= --}}
 
-                            <div class="mb-3 text-3xl">
-                                📷
-                            </div>
-
-                            <p class="text-sm font-medium text-slate-700">
-                                Click to upload photos
-                            </p>
-
-                            <p class="mt-1 text-xs text-slate-500">
-                                JPG, PNG or WEBP
-                            </p>
-
-                            <p class="mt-1 text-xs text-slate-500">
-                                Maximum 5MB per image
-                            </p>
-
-                            <input
-                                type="file"
-                                wire:model="photos"
-                                multiple
-                                accept="image/jpeg,image/png,image/webp"
-                                class="hidden">
-
-                        </label>
-
-
-                        {{-- Uploading --}}
                         <div
-                            wire:loading
-                            wire:target="photos"
-                            class="mt-4 rounded-lg bg-blue-50 px-4 py-3">
+                            x-data="{
+                                uploading: false,
+                                progress: 0
+                            }"
+                            x-on:livewire-upload-start="uploading = true; progress = 0"
+                            x-on:livewire-upload-finish="uploading = false; progress = 100"
+                            x-on:livewire-upload-cancel="uploading = false"
+                            x-on:livewire-upload-error="uploading = false; $wire.showUploadError()"
+                            x-on:livewire-upload-progress="progress = $event.detail.progress">
 
-                            <p class="text-sm text-blue-700">
-                                Uploading images...
-                            </p>
+                            <label
+                                class="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-blue-300 bg-blue-50/40 px-6 py-8 text-center transition hover:border-blue-500 hover:bg-blue-50">
+
+                                <div class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+
+                                    <svg
+                                        class="h-6 w-6 text-blue-600"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M12 16V4m0 0l-4 4m4-4l4 4M5 16v2a2 2 0 002 2h10a2 2 0 002-2v-2" />
+                                    </svg>
+
+                                </div>
+
+                                <p class="text-sm font-semibold text-slate-700">
+                                    Click to upload photos
+                                </p>
+
+                                <p class="mt-1 text-xs text-slate-500">
+                                    JPG, PNG or WEBP
+                                </p>
+
+                                <p class="mt-1 text-xs text-slate-500">
+                                    Maximum 5MB per image · Up to 10 photos
+                                </p>
+
+                                <input
+                                    type="file"
+                                    wire:model="photos"
+                                    multiple
+                                    accept=".jpg,.jpeg,.png,.webp"
+                                    class="hidden">
+                            </label>
+
+
+                            {{-- Upload Progress --}}
+                            <div
+                                x-show="uploading"
+                                x-cloak
+                                class="mt-4">
+
+                                <div class="mb-1 flex items-center justify-between">
+
+                                    <span class="text-xs font-medium text-blue-700">
+                                        Uploading...
+                                    </span>
+
+                                    <span
+                                        class="text-xs font-medium text-blue-700"
+                                        x-text="progress + '%'"></span>
+
+                                </div>
+
+                                <div class="h-2 overflow-hidden rounded-full bg-blue-100">
+
+                                    <div
+                                        class="h-full rounded-full bg-blue-600 transition-all duration-150"
+                                        x-bind:style="'width: ' + progress + '%'"></div>
+
+                                </div>
+
+                            </div>
 
                         </div>
 
 
-                        {{-- Errors --}}
+                        {{-- Upload Validation Errors --}}
                         @error('photos')
-                        <p class="mt-2 text-sm text-red-600">
+                        <p class="mt-2 text-sm font-medium text-red-600">
                             {{ $message }}
                         </p>
                         @enderror
 
                         @error('photos.*')
-                        <p class="mt-2 text-sm text-red-600">
+                        <p class="mt-2 text-sm font-medium text-red-600">
                             {{ $message }}
                         </p>
                         @enderror
 
 
-                        {{-- New Photos --}}
+                        {{-- ================================================= --}}
+                        {{-- NEW PHOTOS --}}
+                        {{-- ================================================= --}}
+
                         @if (!empty($photos))
 
-                        <div class="mt-5">
+                        <div class="mt-6">
 
                             <div class="mb-3 flex items-center justify-between">
 
@@ -872,7 +637,9 @@
 
                                 @foreach ($photos as $index => $photo)
 
-                                <div class="relative overflow-hidden rounded-lg border border-slate-200">
+                                <div
+                                    wire:key="new-photo-{{ $index }}"
+                                    class="relative overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
 
                                     <img
                                         src="{{ $photo->temporaryUrl() }}"
@@ -880,10 +647,10 @@
                                         class="h-32 w-full object-cover">
 
 
-                                    {{-- New Primary --}}
+                                    {{-- Primary --}}
                                     @if ($newPrimaryPhoto === $index)
 
-                                    <span class="absolute left-2 top-2 rounded-full bg-blue-600 px-2 py-1 text-xs font-medium text-white">
+                                    <span class="absolute left-2 top-2 rounded-full bg-blue-600 px-2.5 py-1 text-[11px] font-semibold text-white shadow-sm">
                                         Primary
                                     </span>
 
@@ -892,7 +659,7 @@
                                     <button
                                         type="button"
                                         wire:click="setNewPrimaryPhoto({{ $index }})"
-                                        class="absolute left-2 top-2 rounded-full bg-white px-2 py-1 text-xs font-medium text-slate-700 shadow hover:bg-blue-50">
+                                        class="absolute left-2 top-2 rounded-full bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-sm transition hover:bg-blue-50 hover:text-blue-700">
                                         Set Primary
                                     </button>
 
@@ -903,7 +670,8 @@
                                     <button
                                         type="button"
                                         wire:click="removePhoto({{ $index }})"
-                                        class="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-red-600 shadow hover:bg-red-50">
+                                        class="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-lg leading-none text-red-600 shadow-sm transition hover:bg-red-50"
+                                        title="Remove photo">
                                         ×
                                     </button>
 
@@ -918,53 +686,329 @@
                         @endif
 
                     </div>
-
-                </div>
-
-
-                {{-- ==================================================== --}}
-                {{-- SAVE CARD --}}
-                {{-- ==================================================== --}}
-
-                <div class="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-
-                    <h2 class="text-lg font-semibold text-slate-900">
-                        {{ $isEditing ? 'Update Destination' : 'Save Destination' }}
-                    </h2>
-
-                    <p class="mt-1 text-sm text-slate-500">
-                        Review the information before saving.
-                    </p>
-
-
-                    <button
-                        type="submit"
-                        wire:loading.attr="disabled"
-                        class="mt-5 w-full rounded-lg bg-blue-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60">
-
-                        <span wire:loading.remove wire:target="save">
-                            {{ $isEditing ? 'Update Destination' : 'Save Destination' }}
-                        </span>
-
-                        <span wire:loading wire:target="save">
-                            Checking...
-                        </span>
-
-                    </button>
-
-
-                    <a
-                        href="{{ route('admin.destinations') }}"
-                        class="mt-3 block w-full rounded-lg border border-slate-300 px-4 py-3 text-center text-sm font-medium text-slate-700 hover:bg-slate-50">
-                        Cancel
-                    </a>
-
                 </div>
 
             </div>
 
-        </div>
 
-    </form>
+            {{-- ======================================================== --}}
+            {{-- LOCATION & CONTACT --}}
+            {{-- ======================================================== --}}
+
+            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+
+                <div class="border-b border-slate-200 px-6 py-5">
+
+                    <h2 class="text-lg font-semibold text-slate-900">
+                        Location & Contact
+                    </h2>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Provide the destination location and contact information.
+                    </p>
+
+                </div>
+
+
+                <div class="grid grid-cols-1 gap-5 p-6 md:grid-cols-3">
+
+                    {{-- Address --}}
+                    <div>
+
+                        <label class="mb-2 block text-sm font-medium text-slate-700">
+                            Address
+                            <span class="text-red-500">*</span>
+                        </label>
+
+                        <textarea
+                            wire:model="address"
+                            rows="3"
+                            placeholder="Destination address"
+                            class="w-full resize-none rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"></textarea>
+
+                        @error('address')
+                        <p class="mt-1 text-sm text-red-600">
+                            {{ $message }}
+                        </p>
+                        @enderror
+
+                    </div>
+
+
+                    {{-- Latitude --}}
+                    <div>
+
+                        <label class="mb-2 block text-sm font-medium text-slate-700">
+                            Latitude
+                        </label>
+
+                        <input
+                            type="text"
+                            wire:model="latitude"
+                            placeholder="e.g. 13.0957"
+                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+
+                        @error('latitude')
+                        <p class="mt-1 text-sm text-red-600">
+                            {{ $message }}
+                        </p>
+                        @enderror
+
+                    </div>
+
+
+                    {{-- Longitude --}}
+                    <div>
+
+                        <label class="mb-2 block text-sm font-medium text-slate-700">
+                            Longitude
+                        </label>
+
+                        <input
+                            type="text"
+                            wire:model="longitude"
+                            placeholder="e.g. 103.2022"
+                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+
+                        @error('longitude')
+                        <p class="mt-1 text-sm text-red-600">
+                            {{ $message }}
+                        </p>
+                        @enderror
+
+                    </div>
+
+
+                    {{-- Map Link --}}
+                    <div class="md:col-span-2">
+
+                        <label class="mb-2 block text-sm font-medium text-slate-700">
+                            Google Maps Link
+                        </label>
+
+                        <input
+                            type="url"
+                            wire:model="map_link"
+                            placeholder="https://maps.google.com/..."
+                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+
+                        @error('map_link')
+                        <p class="mt-1 text-sm text-red-600">
+                            {{ $message }}
+                        </p>
+                        @enderror
+
+                    </div>
+
+
+                    {{-- Contact Phone --}}
+                    <div>
+
+                        <label class="mb-2 block text-sm font-medium text-slate-700">
+                            Contact Phone
+                        </label>
+
+                        <input
+                            type="text"
+                            wire:model="contact_phone"
+                            placeholder="+855 12 345 678"
+                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+
+                        @error('contact_phone')
+                        <p class="mt-1 text-sm text-red-600">
+                            {{ $message }}
+                        </p>
+                        @enderror
+
+                    </div>
+
+                </div>
+            </div>
+
+
+            {{-- ======================================================== --}}
+            {{-- PRICING & OPENING HOURS --}}
+            {{-- ======================================================== --}}
+
+            <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+
+                <div class="border-b border-slate-200 px-6 py-5">
+
+                    <h2 class="text-lg font-semibold text-slate-900">
+                        Pricing & Opening Hours
+                    </h2>
+
+                    <p class="mt-1 text-sm text-slate-500">
+                        Set ticket pricing, opening hours, and destination status.
+                    </p>
+
+                </div>
+
+
+                <div class="grid grid-cols-1 gap-5 p-6 md:grid-cols-3">
+
+                    {{-- Ticket Price --}}
+                    <div>
+
+                        <label class="mb-2 block text-sm font-medium text-slate-700">
+                            Ticket Price
+                        </label>
+
+                        <div class="flex items-center gap-3">
+
+                            <div class="flex-1">
+
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    min="0"
+                                    wire:model="ticket_price"
+                                    @disabled($isFree)
+                                    class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100 disabled:bg-slate-100 disabled:text-slate-400">
+
+                            </div>
+
+                            <span class="text-sm font-medium text-slate-500">
+                                USD
+                            </span>
+
+                        </div>
+
+
+                        <label class="mt-3 flex cursor-pointer items-center gap-2">
+
+                            <input
+                                type="checkbox"
+                                wire:model.live="isFree"
+                                class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500">
+
+                            <span class="text-sm text-slate-600">
+                                Free
+                            </span>
+
+                        </label>
+
+
+                        @error('ticket_price')
+                        <p class="mt-1 text-sm text-red-600">
+                            {{ $message }}
+                        </p>
+                        @enderror
+
+                    </div>
+
+
+                    {{-- Open Time --}}
+                    <div>
+
+                        <label class="mb-2 block text-sm font-medium text-slate-700">
+                            Open Time
+                        </label>
+
+                        <input
+                            type="time"
+                            wire:model="open_time"
+                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+
+                        @error('open_time')
+                        <p class="mt-1 text-sm text-red-600">
+                            {{ $message }}
+                        </p>
+                        @enderror
+
+                    </div>
+
+
+                    {{-- Close Time --}}
+                    <div>
+
+                        <label class="mb-2 block text-sm font-medium text-slate-700">
+                            Close Time
+                        </label>
+
+                        <input
+                            type="time"
+                            wire:model="close_time"
+                            class="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+
+                        @error('close_time')
+                        <p class="mt-1 text-sm text-red-600">
+                            {{ $message }}
+                        </p>
+                        @enderror
+
+                    </div>
+
+
+                    {{-- Status --}}
+                    <div>
+
+                        <label class="mb-2 block text-sm font-medium text-slate-700">
+                            Status
+                            <span class="text-red-500">*</span>
+                        </label>
+
+                        <select
+                            wire:model="status"
+                            class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+
+                            <option value="active">
+                                Active
+                            </option>
+
+                            <option value="hidden">
+                                Inactive
+                            </option>
+
+                        </select>
+
+                        @error('status')
+                        <p class="mt-1 text-sm text-red-600">
+                            {{ $message }}
+                        </p>
+                        @enderror
+
+                    </div>
+
+                </div>
+            </div>
+
+
+            {{-- ======================================================== --}}
+            {{-- FORM ACTIONS --}}
+            {{-- ======================================================== --}}
+
+            <div class="flex items-center justify-end gap-3 border-t border-slate-200 pt-6">
+
+                <a
+                    href="{{ route('admin.destinations') }}"
+                    class="rounded-xl border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                    Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    wire:loading.attr="disabled"
+                    class="rounded-xl bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60">
+
+                    <span
+                        wire:loading.remove
+                        wire:target="save">
+                        {{ $isEditing ? 'Update Destination' : 'Create Destination' }}
+                    </span>
+
+                    <span
+                        wire:loading
+                        wire:target="save">
+                        Saving...
+                    </span>
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
 
 </div>

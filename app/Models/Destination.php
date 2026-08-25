@@ -2,21 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Destination extends Model
 {
+    use HasFactory;
+
     protected $table = 'destinations';
-
     protected $primaryKey = 'destination_id';
-
-    public $incrementing = true;
-
-    protected $keyType = 'int';
-
-    public $timestamps = false;
 
     protected $fillable = [
         'category_id',
@@ -37,72 +33,18 @@ class Destination extends Model
         'status',
     ];
 
-    protected $casts = [
-        'latitude' => 'decimal:7',
-        'longitude' => 'decimal:7',
-        'ticket_price' => 'decimal:2',
-    ];
-
     public function category(): BelongsTo
     {
-        return $this->belongsTo(
-            Category::class,
-            'category_id',
-            'category_id'
-        );
-    }
-
-    public function creator(): BelongsTo
-    {
-        return $this->belongsTo(
-            User::class,
-            'created_by',
-            'user_id'
-        );
+        return $this->belongsTo(Category::class, 'category_id', 'category_id');
     }
 
     public function images(): HasMany
     {
-        return $this->hasMany(
-            DestinationImage::class,
-            'destination_id',
-            'destination_id'
-        );
+        return $this->hasMany(DestinationImage::class, 'destination_id', 'destination_id');
     }
 
-    public function reviews(): HasMany
+    public function primaryImage()
     {
-        return $this->hasMany(
-            Review::class,
-            'destination_id',
-            'destination_id'
-        );
-    }
-
-    public function wishlists(): HasMany
-    {
-        return $this->hasMany(
-            Wishlist::class,
-            'destination_id',
-            'destination_id'
-        );
-    }
-
-    public function bookings(): HasMany
-    {
-        return $this->hasMany(
-            Booking::class,
-            'destination_id',
-            'destination_id'
-        );
-    }
-
-    public function tuktukBookings(): HasMany
-    {
-        return $this->hasMany(
-            TuktukBooking::class,
-            'destination_id',
-            'destination_id'
-        );
+        return $this->images()->where('is_primary', 1)->first() ?? $this->images()->first();
     }
 }
