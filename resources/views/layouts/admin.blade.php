@@ -30,15 +30,11 @@
         <aside class="fixed left-0 top-0 z-50 h-screen w-64 shrink-0 overflow-y-auto bg-[#0B0F19] text-white">
 
             {{-- Logo / Brand --}}
-            <div class="flex h-20 items-center px-6">
+            <div class="flex items-center space-x-3 px-6 py-4">
+                <img src="{{ asset('storage/images/logo.jpg') }}" alt="GoBattambang Logo" class="h-10 w-10 object-cover rounded-md">
                 <div>
-                    <h1 class="text-sm font-bold tracking-wide">
-                        GOBATTAMBANG
-                    </h1>
-
-                    <p class="mt-1 text-xs text-slate-400">
-                        ADMIN DASHBOARD
-                    </p>
+                    <h1 class="text-sm font-bold tracking-wide text-white">GOBATTAMBANG</h1>
+                    <p class="text-xs text-slate-400">ADMIN DASHBOARD</p>
                 </div>
             </div>
 
