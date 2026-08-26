@@ -444,11 +444,18 @@
             </div>
 
 
-            {{-- ========================================================
-                DESTINATION TABLE
-            ========================================================= --}}
+        </div> {{-- End Sticky Header + Cards + Filters --}}
 
-            <div class="overflow-visible rounded-lg border border-slate-200 bg-white shadow-sm">
+    </div>
+
+
+    {{-- ========================================================
+        DESTINATION TABLE
+    ========================================================= --}}
+
+    <div class="mt-5 bg-slate-50 px-6 pb-6">
+
+        <div class="overflow-visible rounded-lg border border-slate-200 bg-white shadow-sm">
 
 
                 {{-- ====================================================
@@ -1103,8 +1110,6 @@
                 </div>
 
                 @endif
-
-            </div>
 
         </div>
 
