@@ -75,12 +75,11 @@ class DestinationList extends Component
         $this->resetPage();
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | View Destination
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * --------------------------------------------------------------------------
+     * View Destination
+     * --------------------------------------------------------------------------
+     */
     public function view(int $destinationId): void
     {
         $destination = Destination::with([
@@ -97,6 +96,9 @@ class DestinationList extends Component
             return;
         }
 
+        /*
+     * Get all destination images.
+     */
         $images = $destination->images
             ->map(function ($image) {
                 return [
@@ -107,6 +109,10 @@ class DestinationList extends Component
             ->values()
             ->toArray();
 
+        /*
+     * Get primary image.
+     * If there is no primary image, use the first uploaded image.
+     */
         $primaryImage = $destination->images
             ->firstWhere('is_primary', true);
 
@@ -114,29 +120,50 @@ class DestinationList extends Component
             $primaryImage = $destination->images->first();
         }
 
+        /*
+     * Get the image path.
+     */
+        $primaryImageUrl = $primaryImage
+            ? $primaryImage->image_url
+            : null;
+
+        /*
+     * Store selected destination.
+     */
         $this->selectedDestination = [
             'destination_id' => $destination->destination_id,
+
             'title' => $destination->title,
+
             'slug' => $destination->slug,
+
             'description' => $destination->description,
+
             'things_to_do' => $destination->things_to_do,
+
             'things_to_prepare' => $destination->things_to_prepare,
+
             'address' => $destination->address,
+
             'latitude' => $destination->latitude,
+
             'longitude' => $destination->longitude,
+
             'map_link' => $destination->map_link,
+
             'ticket_price' => $destination->ticket_price,
+
             'status' => $destination->status,
+
             'open_time' => $destination->open_time,
+
             'close_time' => $destination->close_time,
 
             'category' => $destination->category
                 ? $destination->category->name
                 : null,
 
-            'primary_image' => $primaryImage
-                ? $primaryImage->image_url
-                : null,
+            'primary_image' => $primaryImageUrl,
 
             'images' => $images,
         ];
@@ -144,15 +171,15 @@ class DestinationList extends Component
         $this->showViewModal = true;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Close View Modal
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * --------------------------------------------------------------------------
+     * Close View Modal
+     * --------------------------------------------------------------------------
+     */
     public function closeViewModal(): void
     {
         $this->showViewModal = false;
+
         $this->selectedDestination = [];
     }
 
