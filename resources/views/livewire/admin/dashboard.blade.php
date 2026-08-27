@@ -494,248 +494,163 @@
 
 
     {{-- ========================================================= --}}
-    {{-- Content Overview + Quick Actions --}}
+    {{-- Content Overview --}}
     {{-- ========================================================= --}}
 
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div class="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 overflow-hidden">
 
-        {{-- Content Overview --}}
-        <div class="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 overflow-hidden">
-
-            {{-- Section Header --}}
-            <div class="flex items-center justify-between border-b border-slate-100 px-6 py-5">
-
-                <div>
-                    <h2 class="text-lg font-semibold text-slate-900">
-                        Content Overview
-                    </h2>
-
-                    <p class="mt-1 text-sm text-slate-500">
-                        Overview of tourism content
-                    </p>
-                </div>
-
-                <a
-                    href="#"
-                    class="text-sm font-medium text-blue-600 hover:text-blue-700">
-                    View All Content
-                </a>
-
-            </div>
-
-
-            {{-- Content Cards --}}
-            <div class="grid grid-cols-1 gap-4 p-6 sm:grid-cols-2">
-
-                {{-- Destinations --}}
-                <div class="min-w-0 rounded-xl bg-blue-50 p-6">
-
-                    <p class="text-sm font-medium text-slate-600">
-                        Destinations
-                    </p>
-
-                    <p class="mt-4 text-3xl font-bold text-slate-900">
-                        {{ $destinationCount }}
-                    </p>
-
-                    <p class="mt-1 text-sm text-slate-500">
-                        Tourist destinations
-                    </p>
-
-                </div>
-
-
-                {{-- Images --}}
-                <div class="min-w-0 rounded-xl bg-violet-50 p-6">
-
-                    <p class="text-sm font-medium text-slate-600">
-                        Images
-                    </p>
-
-                    <p class="mt-4 text-3xl font-bold text-slate-900">
-                        {{ $destinationImageCount }}
-                    </p>
-
-                    <p class="mt-1 text-sm text-slate-500">
-                        Destination images
-                    </p>
-
-                </div>
-
-
-                {{-- Categories --}}
-                <div class="min-w-0 rounded-xl bg-emerald-50 p-6">
-
-                    <p class="text-sm font-medium text-slate-600">
-                        Categories
-                    </p>
-
-                    <p class="mt-4 text-3xl font-bold text-slate-900">
-                        {{ $categoryCount }}
-                    </p>
-
-                    <p class="mt-1 text-sm text-slate-500">
-                        Tourism categories
-                    </p>
-
-                </div>
-
-
-                {{-- Reviews --}}
-                <div class="min-w-0 rounded-xl bg-amber-50 p-6">
-
-                    <p class="text-sm font-medium text-slate-600">
-                        Reviews
-                    </p>
-
-                    <p class="mt-4 text-3xl font-bold text-slate-900">
-                        {{ $reviewCount }}
-                    </p>
-
-                    <p class="mt-1 text-sm text-slate-500">
-                        Traveler reviews
-                    </p>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        {{-- Quick Actions --}}
-        <div class="rounded-2xl border border-slate-100 bg-white shadow-sm">
-
-            <div class="border-b border-slate-100 px-6 py-5">
-
+        {{-- Section Header --}}
+        <div class="border-b border-slate-100 px-6 py-5">
+            <div>
                 <h2 class="text-lg font-semibold text-slate-900">
-                    Quick Actions
+                    Content Overview
                 </h2>
 
                 <p class="mt-1 text-sm text-slate-500">
-                    Frequently used management actions
+                    Overview of tourism content
                 </p>
+            </div>
+        </div>
+
+
+        {{-- 2 x 2 Cards --}}
+        <div class="grid grid-cols-1 gap-4 p-6 sm:grid-cols-2">
+
+            {{-- ===================================================== --}}
+            {{-- Destinations --}}
+            {{-- ===================================================== --}}
+
+            <div class="min-w-0 rounded-xl bg-blue-50 p-6">
+
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
+                    <span class="text-xl">📍</span>
+                </div>
+
+                <p class="mt-5 text-sm font-medium text-slate-600">
+                    Destinations
+                </p>
+
+                <p class="mt-2 text-3xl font-bold text-slate-900">
+                    {{ $destinationCount }}
+                </p>
+
+                <p class="mt-1 text-sm text-slate-500">
+                    Tourist destinations
+                </p>
+
+                <div class="mt-5">
+                    <a
+                        href="{{ route('admin.destinations') }}"
+                        class="text-sm font-semibold text-blue-600 transition hover:text-blue-700">
+                        View →
+                    </a>
+                </div>
 
             </div>
 
 
-            <div class="grid grid-cols-2 gap-4 p-6 sm:grid-cols-4">
+            {{-- ===================================================== --}}
+            {{-- Categories --}}
+            {{-- ===================================================== --}}
 
-                {{-- Add Destination --}}
-                <a
-                    href="#"
-                    class="group flex flex-col items-center justify-center rounded-xl border border-slate-200 p-5 text-center transition hover:border-blue-200 hover:bg-blue-50">
+            <div class="min-w-0 rounded-xl bg-emerald-50 p-6">
 
-                    <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-blue-50 group-hover:bg-blue-100">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100">
+                    <span class="text-xl">🏷️</span>
+                </div>
 
-                        <svg
-                            class="h-6 w-6 text-blue-600"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M12 5v14m-7-7h14" />
-                        </svg>
+                <p class="mt-5 text-sm font-medium text-slate-600">
+                    Categories
+                </p>
 
-                    </div>
+                <p class="mt-2 text-3xl font-bold text-slate-900">
+                    {{ $categoryCount }}
+                </p>
 
-                    <span class="mt-3 text-sm font-medium text-slate-700">
-                        Add Destination
-                    </span>
+                <p class="mt-1 text-sm text-slate-500">
+                    Tourism categories
+                </p>
 
-                </a>
+                <div class="mt-5">
+                    <a
+                        href="{{ route('admin.categories') }}"
+                        class="text-sm font-semibold text-emerald-600 transition hover:text-emerald-700">
+                        View →
+                    </a>
+                </div>
 
-
-                {{-- Add Category --}}
-                <a
-                    href="#"
-                    class="group flex flex-col items-center justify-center rounded-xl border border-slate-200 p-5 text-center transition hover:border-violet-200 hover:bg-violet-50">
-
-                    <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-violet-50 group-hover:bg-violet-100">
-
-                        <svg
-                            class="h-6 w-6 text-violet-600"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M12 4v16m8-8H4" />
-                        </svg>
-
-                    </div>
-
-                    <span class="mt-3 text-sm font-medium text-slate-700">
-                        Add Category
-                    </span>
-
-                </a>
+            </div>
 
 
-                {{-- View Bookings --}}
-                <a
-                    href="#"
-                    class="group flex flex-col items-center justify-center rounded-xl border border-slate-200 p-5 text-center transition hover:border-amber-200 hover:bg-amber-50">
+            {{-- ===================================================== --}}
+            {{-- Reviews --}}
+            {{-- ===================================================== --}}
 
-                    <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-amber-50 group-hover:bg-amber-100">
+            <div class="min-w-0 rounded-xl bg-amber-50 p-6">
 
-                        <svg
-                            class="h-6 w-6 text-amber-600"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M8 7V3m8 4V3M4 11h16M5 5h14a1 1 0 011 1v13a1 1 0 01-1 1H5a1 1 0 01-1-1V6a1 1 0 011-1z" />
-                        </svg>
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-100">
+                    <span class="text-xl">⭐</span>
+                </div>
 
-                    </div>
+                <p class="mt-5 text-sm font-medium text-slate-600">
+                    Reviews
+                </p>
 
-                    <span class="mt-3 text-sm font-medium text-slate-700">
-                        View Bookings
-                    </span>
+                <p class="mt-2 text-3xl font-bold text-slate-900">
+                    {{ $reviewCount }}
+                </p>
 
-                </a>
+                <p class="mt-1 text-sm text-slate-500">
+                    Traveler reviews
+                </p>
+
+                <div class="mt-5">
+                    <a
+                        href="{{ route('admin.reviews') }}"
+                        class="text-sm font-semibold text-amber-600 transition hover:text-amber-700">
+                        View →
+                    </a>
+                </div>
+
+            </div>
 
 
-                {{-- View Reports --}}
-                <a
-                    href="#"
-                    class="group flex flex-col items-center justify-center rounded-xl border border-slate-200 p-5 text-center transition hover:border-emerald-200 hover:bg-emerald-50">
+            {{-- ===================================================== --}}
+            {{-- Users --}}
+            {{-- ===================================================== --}}
 
-                    <div class="flex h-11 w-11 items-center justify-center rounded-lg bg-emerald-50 group-hover:bg-emerald-100">
+            <div class="min-w-0 rounded-xl bg-violet-50 p-6">
 
-                        <svg
-                            class="h-6 w-6 text-emerald-600"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24">
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M4 19V5m0 14h16M8 16v-5m4 5V7m4 9v-8" />
-                        </svg>
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-100">
+                    <span class="text-xl">👥</span>
+                </div>
 
-                    </div>
+                <p class="mt-5 text-sm font-medium text-slate-600">
+                    Users
+                </p>
 
-                    <span class="mt-3 text-sm font-medium text-slate-700">
-                        View Reports
-                    </span>
+                <p class="mt-2 text-3xl font-bold text-slate-900">
+                    {{ $userCount }}
+                </p>
 
-                </a>
+                <p class="mt-1 text-sm text-slate-500">
+                    Registered users
+                </p>
+
+                <div class="mt-5">
+                    <a
+                        href="{{ route('admin.users') }}"
+                        class="text-sm font-semibold text-violet-600 transition hover:text-violet-700">
+                        View →
+                    </a>
+                </div>
 
             </div>
 
         </div>
 
     </div>
+
+
 
 </div>
