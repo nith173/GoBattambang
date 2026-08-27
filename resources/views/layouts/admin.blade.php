@@ -31,14 +31,21 @@
 
             {{-- Logo / Brand --}}
             <div class="flex h-20 items-center px-6">
-                <div>
-                    <h1 class="text-sm font-bold tracking-wide">
-                        GOBATTAMBANG
-                    </h1>
+                <div class="flex items-center gap-3">
+                    <img
+                        src="{{ asset('storage/images/logo.jpg') }}"
+                        alt="GoBattambang Logo"
+                        class="h-10 w-10 shrink-0 rounded-lg object-cover">
 
-                    <p class="mt-1 text-xs text-slate-400">
-                        ADMIN DASHBOARD
-                    </p>
+                    <div>
+                        <span class="text-lg font-bold text-white">
+                            GoBattambang
+                        </span>
+
+                        <p class="mt-1 text-xs text-slate-400">
+                            ADMIN DASHBOARD
+                        </p>
+                    </div>
                 </div>
             </div>
 
