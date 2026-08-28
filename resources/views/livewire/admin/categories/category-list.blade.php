@@ -318,11 +318,11 @@
 
 
             {{-- Table --}}
-            <div class="overflow-x-auto">
+            <div class="max-h-[300px] overflow-auto">
 
                 <table class="min-w-full divide-y divide-slate-100">
 
-                    <thead class="bg-slate-50">
+                    <thead class="sticky top-0 z-10 bg-slate-50">
 
                         <tr>
 
