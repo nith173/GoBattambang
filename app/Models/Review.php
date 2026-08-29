@@ -13,25 +13,27 @@ class Review extends Model
 
     public $timestamps = false;
 
-    protected $casts = [
-        'created_at' => 'datetime',
+    protected $fillable = [
+        'user_id',
+        'destination_id',
+        'rating',
+        'comment',
+        'status',
+        'created_at',
     ];
 
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(
-            User::class,
-            'user_id',
-            'user_id'
-        );
-    }
+    protected $casts = [
+        'created_at' => 'datetime',
+        'rating' => 'integer',
+    ];
 
-    public function destination(): BelongsTo
-    {
-        return $this->belongsTo(
-            Destination::class,
-            'destination_id',
-            'destination_id'
-        );
-    }
+   public function user(): BelongsTo
+   {
+       return $this->belongsTo(User::class, 'user_id', 'id');
+   }
+
+  public function destination(): BelongsTo
+  {
+      return $this->belongsTo(Destination::class, 'destination_id', 'id');
+  }
 }
