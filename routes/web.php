@@ -24,8 +24,7 @@ Route::get('/admin-layout-test', function () {
 });
 
 
-Route::get('/admin/dashboard', Dashboard::class)
-    ->name('admin.dashboard');
+Route::get('/dashboard', Dashboard::class);
 
 Route::get('/admin/destinations', DestinationList::class)
     ->name('admin.destinations');
