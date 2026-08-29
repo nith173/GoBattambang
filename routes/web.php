@@ -25,8 +25,9 @@ Route::get('/admin-layout-test', function () {
 
 
 
-Route::get('/admin/dashboard', Dashboard::class)
-    ->name('admin.dashboard');
+Route::get('/admin/dashboard', function () {
+    return view('livewire.admin.dashboard');
+})->name('admin.dashboard');
 
 Route::get('/admin/destinations', DestinationList::class)
     ->name('admin.destinations');
