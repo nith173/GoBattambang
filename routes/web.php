@@ -9,13 +9,13 @@ Route::get('/', function () {
     return redirect()->route('admin.categories');
 });
 
-// Category routes (available on this branch)
+// Category routes
 Route::get('/admin/categories', CategoryList::class)->name('admin.categories');
 Route::get('/admin/categories/create', CategoryForm::class)->name('admin.categories.create');
 Route::get('/admin/categories/{categoryId}/edit', CategoryForm::class)->name('admin.categories.edit');
 Route::get('/admin/categories/{categoryId}', CategoryView::class)->name('admin.categories.view');
 
-// Temporary placeholders for other routes missing classes on this branch
+// Fallback routes for components that exist on other branches
 Route::get('/admin/dashboard', function () { return view('admin-layout-test'); })->name('admin.dashboard');
 Route::get('/admin/destinations', function () { return ''; })->name('admin.destinations');
 Route::get('/admin/destinations/create', function () { return ''; })->name('admin.destinations.create');
