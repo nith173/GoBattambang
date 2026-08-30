@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Livewire\Admin\Categories\CategoryList;
 use App\Livewire\Admin\Categories\CategoryForm;
 use App\Livewire\Admin\Categories\CategoryView;
+use App\Livewire\Admin\Destinations\DestinationList;
+use App\Livewire\Admin\Reviews\ReviewList;
 
 Route::get('/', function () {
     return redirect()->route('admin.categories');
@@ -15,11 +17,15 @@ Route::get('/admin/categories/create', CategoryForm::class)->name('admin.categor
 Route::get('/admin/categories/{categoryId}/edit', CategoryForm::class)->name('admin.categories.edit');
 Route::get('/admin/categories/{categoryId}', CategoryView::class)->name('admin.categories.view');
 
-// Fallback routes for components that exist on other branches
-Route::get('/admin/dashboard', function () { return view('admin-layout-test'); })->name('admin.dashboard');
-Route::get('/admin/destinations', function () { return ''; })->name('admin.destinations');
+// Destination routes
+Route::get('/admin/destinations', DestinationList::class)->name('admin.destinations');
 Route::get('/admin/destinations/create', function () { return ''; })->name('admin.destinations.create');
 Route::get('/admin/destinations/{destinationId}/edit', function () { return ''; })->name('admin.destinations.edit');
+
+// Review routes
+Route::get('/admin/reviews', ReviewList::class)->name('admin.reviews');
+
+// Fallback routes for components that exist on other branches
+Route::get('/admin/dashboard', function () { return view('admin-layout-test'); })->name('admin.dashboard');
 Route::get('/admin/users', function () { return ''; })->name('admin.users');
 Route::get('/admin/bookings', function () { return ''; })->name('admin.bookings');
-Route::get('/admin/reviews', function () { return ''; })->name('admin.reviews');
