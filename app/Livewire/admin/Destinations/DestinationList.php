@@ -9,7 +9,7 @@ use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
 
-#[Layout('layouts.admin')]
+// #[Layout('layouts.admin')]
 class DestinationList extends Component
 {
     use WithPagination;
