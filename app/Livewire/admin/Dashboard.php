@@ -19,6 +19,7 @@ class Dashboard extends Component
         return view('livewire.admin.dashboard', [
             'destinationCount' => Destination::count(),
             'categoryCount' => Category::count(),
+            'userCount' => User::count(),
             'bookingCount' => Booking::count(),
             'registeredTravelerCount' => User::where('role', 'registered')->count(),
             'reviewCount' => Review::count(),

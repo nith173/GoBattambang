@@ -27,18 +27,25 @@
         {{-- =========================
              SIDEBAR
         ========================== --}}
-        <aside class="w-64 shrink-0 bg-[#0B0F19] text-white">
+        <aside class="fixed left-0 top-0 z-50 h-screen w-64 shrink-0 overflow-y-auto bg-[#0B0F19] text-white">
 
             {{-- Logo / Brand --}}
             <div class="flex h-20 items-center px-6">
-                <div>
-                    <h1 class="text-sm font-bold tracking-wide">
-                        GOBATTAMBANG
-                    </h1>
+                <div class="flex items-center gap-3">
+                    <img
+                        src="{{ asset('storage/images/logo.jpg') }}"
+                        alt="GoBattambang Logo"
+                        class="h-10 w-10 shrink-0 rounded-lg object-cover">
 
-                    <p class="mt-1 text-xs text-slate-400">
-                        ADMIN DASHBOARD
-                    </p>
+                    <div>
+                        <span class="text-lg font-bold text-white">
+                            GoBattambang
+                        </span>
+
+                        <p class="mt-1 text-xs text-slate-400">
+                            ADMIN DASHBOARD
+                        </p>
+                    </div>
                 </div>
             </div>
 
@@ -61,7 +68,7 @@
                 <a
                     href="{{ route('admin.destinations') }}"
                     class="mb-2 flex items-center rounded-xl px-4 py-3 text-sm font-medium
-                        {{ request()->routeIs('admin.destinations')
+                        {{ request()->routeIs('admin.destinations*')
                             ? 'bg-blue-600 text-white'
                             : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
                     Destinations
@@ -115,14 +122,14 @@
         {{-- =========================
              MAIN AREA
         ========================== --}}
-        <div class="flex min-w-0 flex-1 flex-col">
+        <div class="ml-64 flex min-w-0 flex-1 flex-col">
 
 
             {{-- =========================
                  TOP HEADER
             ========================== --}}
             <header
-                class="flex h-20 items-center justify-end border-b border-slate-200 bg-white px-8">
+                class="sticky top-0 z-40 flex h-20 items-center justify-end border-b border-slate-200 bg-white px-8">
 
                 <div class="flex items-center gap-4">
 

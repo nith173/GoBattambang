@@ -31,7 +31,17 @@ class DestinationList extends Component
 
     /*
     |--------------------------------------------------------------------------
-    | Reset Pagination When Filters Change
+    | View Modal
+    |--------------------------------------------------------------------------
+    */
+
+    public bool $showViewModal = false;
+
+    public array $selectedDestination = [];
+
+    /*
+    |--------------------------------------------------------------------------
+    | Reset Pagination
     |--------------------------------------------------------------------------
     */
 
@@ -65,6 +75,114 @@ class DestinationList extends Component
         $this->resetPage();
     }
 
+    /**
+     * --------------------------------------------------------------------------
+     * View Destination
+     * --------------------------------------------------------------------------
+     */
+    public function view(int $destinationId): void
+    {
+        $destination = Destination::with([
+            'category',
+            'images',
+        ])->find($destinationId);
+
+        if (!$destination) {
+            session()->flash(
+                'error',
+                'Destination not found.'
+            );
+
+            return;
+        }
+
+        /*
+     * Get all destination images.
+     */
+        $images = $destination->images
+            ->map(function ($image) {
+                return [
+                    'image_url' => $image->image_url,
+                    'is_primary' => (bool) $image->is_primary,
+                ];
+            })
+            ->values()
+            ->toArray();
+
+        /*
+     * Get primary image.
+     * If there is no primary image, use the first uploaded image.
+     */
+        $primaryImage = $destination->images
+            ->firstWhere('is_primary', true);
+
+        if (!$primaryImage) {
+            $primaryImage = $destination->images->first();
+        }
+
+        /*
+     * Get the image path.
+     */
+        $primaryImageUrl = $primaryImage
+            ? $primaryImage->image_url
+            : null;
+
+        /*
+     * Store selected destination.
+     */
+        $this->selectedDestination = [
+            'destination_id' => $destination->destination_id,
+
+            'title' => $destination->title,
+
+            'slug' => $destination->slug,
+
+            'description' => $destination->description,
+
+            'things_to_do' => $destination->things_to_do,
+
+            'things_to_prepare' => $destination->things_to_prepare,
+
+            'address' => $destination->address,
+
+            'latitude' => $destination->latitude,
+
+            'longitude' => $destination->longitude,
+
+            'map_link' => $destination->map_link,
+
+            'ticket_price' => $destination->ticket_price,
+
+            'status' => $destination->status,
+
+            'open_time' => $destination->open_time,
+
+            'close_time' => $destination->close_time,
+
+            'category' => $destination->category
+                ? $destination->category->name
+                : null,
+
+            'primary_image' => $primaryImageUrl,
+
+            'images' => $images,
+        ];
+
+        $this->showViewModal = true;
+    }
+
+    /**
+     * --------------------------------------------------------------------------
+     * Close View Modal
+     * --------------------------------------------------------------------------
+     */
+    public function closeViewModal(): void
+    {
+        $this->showViewModal = false;
+
+        $this->selectedDestination = [];
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Delete Destination
@@ -84,28 +202,12 @@ class DestinationList extends Component
             return;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Delete Destination
-        |--------------------------------------------------------------------------
-        |
-        | If your database has ON DELETE CASCADE configured,
-        | related records will also be deleted automatically.
-        |
-        */
-
         $destination->delete();
 
         session()->flash(
             'success',
             'Destination deleted successfully.'
         );
-
-        /*
-        |--------------------------------------------------------------------------
-        | Make sure current page still exists
-        |--------------------------------------------------------------------------
-        */
 
         $this->resetPage();
     }
@@ -133,8 +235,16 @@ class DestinationList extends Component
 
         $inactiveDestinations = Destination::where(
             'status',
-            'inactive'
+            'hidden'
         )->count();
+
+        /*
+        |--------------------------------------------------------------------------
+        | Category Count
+        |--------------------------------------------------------------------------
+        */
+
+        $categoryCount = Category::count();
 
         /*
         |--------------------------------------------------------------------------
@@ -210,14 +320,23 @@ class DestinationList extends Component
             || $this->categoryFilter !== ''
             || $this->statusFilter !== '';
 
+        /*
+        |--------------------------------------------------------------------------
+        | Return View
+        |--------------------------------------------------------------------------
+        */
+
         return view(
             'livewire.admin.destinations.destination-list',
             [
                 'destinations' => $destinations,
                 'categories' => $categories,
+
                 'totalDestinations' => $totalDestinations,
                 'activeDestinations' => $activeDestinations,
                 'inactiveDestinations' => $inactiveDestinations,
+                'categoryCount' => $categoryCount,
+
                 'hasActiveFilters' => $hasActiveFilters,
             ]
         );
