@@ -26,6 +26,7 @@ class DestinationForm extends Component
     */
 
     public ?int $destinationId = null;
+    public bool $isEditing = false;
     public string $title = '';
     public string $slug = '';
     public ?int $category_id = null;
@@ -107,6 +108,7 @@ class DestinationForm extends Component
     public function mount(?int $destinationId = null): void
     {
         $this->destinationId = $destinationId;
+        $this->isEditing = (bool) $destinationId;
 
         if (!$destinationId) {
             return;
@@ -173,11 +175,6 @@ class DestinationForm extends Component
     |--------------------------------------------------------------------------
     | Load Existing Photos
     |--------------------------------------------------------------------------
-    |
-    | IMPORTANT:
-    | display_order is NOT used because it does not exist
-    | in the team's database.
-    |
     */
 
     private function loadExistingPhotos(): void
@@ -210,10 +207,6 @@ class DestinationForm extends Component
     |--------------------------------------------------------------------------
     | Confirmation Popup
     |--------------------------------------------------------------------------
-    |
-    | Used ONLY when saving/creating/updating the destination.
-    | Photo delete/set-primary do NOT use confirmation.
-    |
     */
 
     private function openConfirmPopup(
@@ -294,9 +287,7 @@ class DestinationForm extends Component
         } catch (\Throwable $e) {
             report($e);
 
-            $this->showError(
-                'The operation could not be completed. Please try again.'
-            );
+            $this->showError($e->getMessage());
         }
 
         $this->confirmAction = '';
@@ -455,12 +446,6 @@ class DestinationForm extends Component
             ],
         ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | Ticket Price Required When Not Free
-        |--------------------------------------------------------------------------
-        */
-
         if (!$this->isFree && trim($this->ticket_price) === '') {
             $this->addError(
                 'ticket_price',
@@ -473,12 +458,6 @@ class DestinationForm extends Component
             ]);
         }
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Total Photos
-    |--------------------------------------------------------------------------
-    */
 
     private function getTotalPhotoCount(): int
     {
@@ -511,12 +490,6 @@ class DestinationForm extends Component
             return;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Ticket Price
-        |--------------------------------------------------------------------------
-        */
-
         if ($this->isFree) {
             $ticketPrice = 0;
         } else {
@@ -536,21 +509,9 @@ class DestinationForm extends Component
             $ticketPrice = $this->ticket_price;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Slug
-        |--------------------------------------------------------------------------
-        */
-
         $slug = trim($this->slug) !== ''
             ? Str::slug($this->slug)
             : Str::slug($this->title);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Destination Data
-        |--------------------------------------------------------------------------
-        */
 
         $data = [
             'category_id' => $this->category_id,
@@ -603,12 +564,6 @@ class DestinationForm extends Component
         DB::beginTransaction();
 
         try {
-            /*
-            |--------------------------------------------------------------------------
-            | Create / Update Destination
-            |--------------------------------------------------------------------------
-            */
-
             if ($this->destinationId) {
                 $destination = Destination::findOrFail(
                     $this->destinationId
@@ -628,23 +583,7 @@ class DestinationForm extends Component
                 $message = 'Destination created successfully.';
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | Upload Photos
-            |--------------------------------------------------------------------------
-            |
-            | IMPORTANT:
-            | display_order is NOT used.
-            |
-            */
-
             if (!empty($this->photos)) {
-                /*
-                |--------------------------------------------------------------------------
-                | Check Existing Primary
-                |--------------------------------------------------------------------------
-                */
-
                 $hasPrimaryImage = DestinationImage::where(
                     'destination_id',
                     $destination->destination_id
@@ -652,41 +591,17 @@ class DestinationForm extends Component
                     ->where('is_primary', true)
                     ->exists();
 
-                /*
-                |--------------------------------------------------------------------------
-                | Upload Each Photo
-                |--------------------------------------------------------------------------
-                */
-
                 foreach ($this->photos as $index => $photo) {
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Store Uploaded Photo
-                    |--------------------------------------------------------------------------
-                    */
-
                     $path = $photo->store(
                         'destinations',
                         'public'
                     );
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Check New Primary Selection
-                    |--------------------------------------------------------------------------
-                    */
 
                     $isSelectedNewPrimary =
                         $this->newPrimaryPhoto !== null
                         && $index === $this->newPrimaryPhoto;
 
                     $isPrimary = false;
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | User Selected This New Photo As Primary
-                    |--------------------------------------------------------------------------
-                    */
 
                     if ($isSelectedNewPrimary) {
                         DestinationImage::where(
@@ -698,32 +613,13 @@ class DestinationForm extends Component
 
                         $isPrimary = true;
                         $hasPrimaryImage = true;
-                    }
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | No Existing Primary
-                    |--------------------------------------------------------------------------
-                    |
-                    | If there is no primary image and the user
-                    | did not select one, first uploaded image
-                    | becomes primary.
-                    |
-                    */
-
-                    elseif (
+                    } elseif (
                         !$hasPrimaryImage
                         && $this->newPrimaryPhoto === null
                         && $index === 0
                     ) {
                         $isPrimary = true;
                     }
-
-                    /*
-                    |--------------------------------------------------------------------------
-                    | Create Image Record
-                    |--------------------------------------------------------------------------
-                    */
 
                     DestinationImage::create([
                         'destination_id' =>
@@ -744,23 +640,11 @@ class DestinationForm extends Component
 
             DB::commit();
 
-            /*
-            |--------------------------------------------------------------------------
-            | Reset Photo State
-            |--------------------------------------------------------------------------
-            */
-
             $this->loadExistingPhotos();
 
             $this->photos = [];
 
             $this->newPrimaryPhoto = null;
-
-            /*
-            |--------------------------------------------------------------------------
-            | Success
-            |--------------------------------------------------------------------------
-            */
 
             $this->showSuccess($message);
         } catch (\Throwable $e) {
@@ -768,46 +652,15 @@ class DestinationForm extends Component
 
             report($e);
 
-            $this->showError(
-                'The destination could not be saved. Please try again.'
-            );
+            $this->showError($e->getMessage());
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Photo Updated
-    |--------------------------------------------------------------------------
-    |
-    | Valid photo:
-    | - No success popup
-    | - No confirmation popup
-    |
-    | Invalid photo:
-    | - Error popup
-    |
-    | More than 10:
-    | - Error popup
-    |
-    */
-
     public function updatedPhotos(): void
     {
-        /*
-        |--------------------------------------------------------------------------
-        | No Photos
-        |--------------------------------------------------------------------------
-        */
-
         if (empty($this->photos)) {
             return;
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Maximum Total Photos
-        |--------------------------------------------------------------------------
-        */
 
         if ($this->getTotalPhotoCount() > 10) {
             $this->photos = [];
@@ -821,12 +674,6 @@ class DestinationForm extends Component
             return;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Validate Uploaded Photos
-        |--------------------------------------------------------------------------
-        */
-
         try {
             $this->validate([
                 'photos.*' => [
@@ -836,12 +683,6 @@ class DestinationForm extends Component
                 ],
             ]);
         } catch (ValidationException $e) {
-            /*
-            |--------------------------------------------------------------------------
-            | Keep Existing Valid Photos
-            |--------------------------------------------------------------------------
-            */
-
             $invalidIndexes = [];
 
             foreach ($e->validator->errors()->keys() as $key) {
@@ -883,18 +724,10 @@ class DestinationForm extends Component
 
             $this->newPrimaryPhoto = null;
 
-            $this->showError(
-                'The photo could not be uploaded. Please try again.'
-            );
+            $this->showError($e->getMessage());
 
             return;
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Fix Primary Index
-        |--------------------------------------------------------------------------
-        */
 
         if (
             $this->newPrimaryPhoto !== null
@@ -904,22 +737,7 @@ class DestinationForm extends Component
         ) {
             $this->newPrimaryPhoto = null;
         }
-
-        /*
-        |--------------------------------------------------------------------------
-        | IMPORTANT
-        |--------------------------------------------------------------------------
-        |
-        | Do NOT show a success popup for a valid upload.
-        |
-        */
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Set New Photo as Primary
-    |--------------------------------------------------------------------------
-    */
 
     public function setNewPrimaryPhoto(int $index): void
     {
@@ -929,12 +747,6 @@ class DestinationForm extends Component
 
         $this->newPrimaryPhoto = $index;
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Remove New Photo
-    |--------------------------------------------------------------------------
-    */
 
     public function removePhoto(int $index): void
     {
@@ -955,18 +767,6 @@ class DestinationForm extends Component
             $this->newPrimaryPhoto--;
         }
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Delete Existing Photo
-    |--------------------------------------------------------------------------
-    |
-    | IMPORTANT:
-    | Deletes immediately.
-    | No confirmation popup.
-    | No success popup.
-    |
-    */
 
     public function deleteExistingPhoto(int $imageId): void
     {
@@ -992,12 +792,6 @@ class DestinationForm extends Component
 
         $this->performDeleteExistingPhoto();
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Perform Delete Existing Photo
-    |--------------------------------------------------------------------------
-    */
 
     private function performDeleteExistingPhoto(): void
     {
@@ -1027,12 +821,6 @@ class DestinationForm extends Component
             return;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Delete Physical File
-        |--------------------------------------------------------------------------
-        */
-
         $imageUrl = $image->image_url ?? '';
 
         $path = parse_url(
@@ -1058,31 +846,9 @@ class DestinationForm extends Component
             }
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Check Whether Deleted Photo Was Primary
-        |--------------------------------------------------------------------------
-        */
-
         $wasPrimary = (bool) $image->is_primary;
 
-        /*
-        |--------------------------------------------------------------------------
-        | Delete Database Record
-        |--------------------------------------------------------------------------
-        */
-
         $image->delete();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Assign New Primary If Necessary
-        |--------------------------------------------------------------------------
-        |
-        | If the deleted image was the primary image,
-        | automatically make another existing image primary.
-        |
-        */
 
         if ($wasPrimary) {
             DestinationImage::where(
@@ -1106,174 +872,13 @@ class DestinationForm extends Component
             }
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Reload Photos
-        |--------------------------------------------------------------------------
-        |
-        | IMPORTANT:
-        | No success popup.
-        |
-        */
-
         $this->loadExistingPhotos();
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Set Existing Photo as Primary
-    |--------------------------------------------------------------------------
-    |
-    | IMPORTANT:
-    | Sets immediately.
-    | No confirmation popup.
-    | No success popup.
-    |
-    */
-
-    public function setPrimaryPhoto(int $imageId): void
-    {
-        if (!$this->destinationId) {
-            return;
-        }
-
-        $image = DestinationImage::where(
-            'image_id',
-            $imageId
-        )
-            ->where(
-                'destination_id',
-                $this->destinationId
-            )
-            ->first();
-
-        if (!$image) {
-            return;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Already Primary
-        |--------------------------------------------------------------------------
-        */
-
-        if ((bool) $image->is_primary) {
-            return;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Set Immediately
-        |--------------------------------------------------------------------------
-        */
-
-        $this->pendingPhotoId = $imageId;
-
-        $this->performSetPrimaryPhoto();
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Perform Set Primary
-    |--------------------------------------------------------------------------
-    */
-
-    private function performSetPrimaryPhoto(): void
-    {
-        if (!$this->destinationId) {
-            return;
-        }
-
-        $imageId = $this->pendingPhotoId;
-
-        $this->pendingPhotoId = null;
-
-        if (!$imageId) {
-            return;
-        }
-
-        $image = DestinationImage::where(
-            'image_id',
-            $imageId
-        )
-            ->where(
-                'destination_id',
-                $this->destinationId
-            )
-            ->first();
-
-        if (!$image) {
-            return;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Remove Primary From All Other Photos
-        |--------------------------------------------------------------------------
-        */
-
-        DestinationImage::where(
-            'destination_id',
-            $this->destinationId
-        )->update([
-            'is_primary' => false,
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Set Selected Photo as Primary
-        |--------------------------------------------------------------------------
-        */
-
-        $image->update([
-            'is_primary' => true,
-        ]);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Reload Photos
-        |--------------------------------------------------------------------------
-        |
-        | IMPORTANT:
-        | No success popup.
-        |
-        */
-
-        $this->loadExistingPhotos();
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Free Ticket
-    |--------------------------------------------------------------------------
-    */
-
-    public function updatedIsFree(bool $value): void
-    {
-        if ($value) {
-            $this->ticket_price = '';
-
-            $this->resetValidation('ticket_price');
-        }
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Render
-    |--------------------------------------------------------------------------
-    */
 
     public function render()
     {
-        return view(
-            'livewire.admin.destinations.destination-form',
-            [
-                'categories' =>
-                    Category::orderBy('name')->get(),
-
-                'isEditing' =>
-                    $this->destinationId !== null,
-            ]
-        );
+        return view('livewire.admin.destinations.destination-form', [
+            'categories' => Category::orderBy('name')->get(),
+        ]);
     }
 }

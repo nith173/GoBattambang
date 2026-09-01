@@ -1,4 +1,4 @@
-<div class="h-[calc(100vh-5rem)] overflow-hidden">
+<div class="w-full">
 
     {{-- ================================================================
         SUCCESS ALERT
@@ -72,11 +72,10 @@
 
 
     {{-- ================================================================
-        FIXED PAGE CONTENT
-        Header + Cards + Search/Filter + Table
+        PAGE CONTENT
     ================================================================= --}}
 
-    <div class="flex h-full min-h-0 flex-col bg-slate-50">
+    <div class="flex flex-col bg-slate-50">
 
 
         {{-- ============================================================
@@ -143,8 +142,7 @@
 
 
         {{-- ============================================================
-            SCROLL-FREE TOP CONTENT
-            Statistics + Search/Filter
+            STATISTICS & FILTERS
         ============================================================= --}}
 
         <div class="shrink-0 space-y-5 px-6 py-6">
@@ -506,12 +504,12 @@
             TABLE AREA
         ================================================================= --}}
 
-        <div class="flex min-h-0 flex-1 flex-col px-6 pb-6">
+        <div class="flex flex-col px-6 pb-6">
 
 
             {{-- DESTINATION TABLE CARD --}}
 
-            <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+            <div class="flex flex-col rounded-lg border border-slate-200 bg-white shadow-sm">
 
 
                 {{-- TABLE TITLE / RESULT COUNT --}}
@@ -644,13 +642,13 @@
                 @else
 
 
-                    {{-- SCROLLABLE TABLE AREA --}}
+                    {{-- TABLE CONTAINER --}}
 
-                    <div class="min-h-0 flex-1 overflow-auto">
+                    <div class="w-full overflow-x-auto">
 
-                        <table class="min-w-full">
+                        <table class="min-w-[850px] w-full">
 
-                            <thead class="sticky top-0 z-30 border-b border-slate-200 bg-slate-50">
+                            <thead class="border-b border-slate-200 bg-slate-50">
 
                                 <tr>
 
@@ -704,14 +702,22 @@
 
                                         {{-- PHOTO --}}
                                         <td class="px-3 py-3">
-                                            <div class="h-12 w-16 overflow-hidden rounded-md bg-slate-100">
+                                            <div class="h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-slate-100 border border-slate-200">
                                                 @if ($primaryImage && $primaryImage->image_url)
                                                     @php
-                                                        $displayImageUrl = asset(ltrim($primaryImage->image_url, '/'));
+                                                        $url = $primaryImage->image_url;
+                                                        if (\Illuminate\Support\Str::startsWith($url, 'http://') || \Illuminate\Support\Str::startsWith($url, 'https://')) {
+                                                            $displayImageUrl = $url;
+                                                        } else {
+                                                            $cleanPath = ltrim($url, '/');
+                                                            $displayImageUrl = \Illuminate\Support\Str::startsWith($cleanPath, 'storage/')
+                                                                ? asset($cleanPath)
+                                                                : asset('storage/' . $cleanPath);
+                                                        }
                                                     @endphp
                                                     <img src="{{ $displayImageUrl }}" alt="{{ $destination->title }}" class="h-full w-full object-cover" loading="lazy">
                                                 @else
-                                                    <div class="flex h-full w-full items-center justify-center">
+                                                    <div class="flex h-full w-full items-center justify-center bg-slate-50">
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-slate-400">
                                                             <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.409 2.409M3.75 19.5h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Z" />
                                                         </svg>
@@ -759,18 +765,34 @@
 
                                         {{-- ACTIONS --}}
                                         <td class="px-4 py-3 text-center whitespace-nowrap">
-                                            <div class="flex items-center justify-center gap-2">
-                                                <button wire:click="view({{ $destination->destination_id }})" class="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-blue-600 transition">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            <div class="relative inline-block text-left" x-data="{ open: false }">
+                                                <button @click="open = !open" type="button" class="p-1.5 text-slate-500 hover:text-slate-700 transition rounded-lg hover:bg-slate-100" title="Actions">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 12.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" />
                                                     </svg>
                                                 </button>
-                                                <button wire:click="delete({{ $destination->destination_id }})" wire:confirm="Are you sure you want to delete this destination?" class="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-red-600 transition">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </button>
+
+                                                <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 z-50 mt-2 w-36 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black/5 focus:outline-none py-1" style="display: none;">
+                                                    <button type="button" wire:click="openViewModal({{ $destination->destination_id }})" @click="open = false" class="flex w-full items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4 text-slate-400">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                        </svg>
+                                                        View
+                                                    </button>
+                                                    <a href="{{ route('admin.destinations.edit', $destination->destination_id) }}" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 transition">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4 text-slate-400">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
+                                                        </svg>
+                                                        Edit
+                                                    </a>
+                                                    <button type="button" wire:click="deleteDestination({{ $destination->destination_id }})" wire:confirm="Are you sure you want to delete this destination?" class="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-slate-100 transition">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="h-4 w-4 text-red-400">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                                        </svg>
+                                                        Delete
+                                                    </button>
+                                                </div>
                                             </div>
                                         </td>
 
@@ -782,11 +804,6 @@
 
                         </table>
 
-                        {{-- PAGINATION --}}
-                        <div class="border-t border-slate-200 px-5 py-3">
-                            {{ $destinations->links() }}
-                        </div>
-
                     </div>
 
                 @endif
@@ -796,5 +813,112 @@
         </div>
 
     </div>
+
+
+    {{-- ================================================================
+        VIEW DESTINATION MODAL
+    ================================================================= --}}
+    @if($showViewModal && $selectedDestination)
+        <div class="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-900/50 p-4 overflow-y-auto" x-data>
+            <div class="relative w-full max-w-2xl rounded-xl bg-white shadow-2xl overflow-hidden my-8">
+
+                {{-- Modal Header --}}
+                <div class="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Destination Details</h3>
+                        <p class="text-xs text-slate-500">View destination information.</p>
+                    </div>
+                    <button type="button" wire:click="$set('showViewModal', false)" class="text-slate-400 hover:text-slate-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- Modal Body (Scrollable) --}}
+                <div class="max-h-[75vh] overflow-y-auto p-6 space-y-6">
+
+                    {{-- Banner Image --}}
+                    @php
+                        $modalImage = $selectedDestination->images->firstWhere('is_primary', true) ?? $selectedDestination->images->first();
+                    @endphp
+                    <div class="h-48 w-full overflow-hidden rounded-lg bg-slate-100 border border-slate-200">
+                        @if ($modalImage && $modalImage->image_url)
+                            @php
+                                $url = $modalImage->image_url;
+                                if (\Illuminate\Support\Str::startsWith($url, 'http://') || \Illuminate\Support\Str::startsWith($url, 'https://')) {
+                                    $displayModalUrl = $url;
+                                } else {
+                                    $cleanPath = ltrim($url, '/');
+                                    $displayModalUrl = \Illuminate\Support\Str::startsWith($cleanPath, 'storage/')
+                                        ? asset($cleanPath)
+                                        : asset('storage/' . $cleanPath);
+                                }
+                            @endphp
+                            <img src="{{ $displayModalUrl }}" alt="{{ $selectedDestination->title }}" class="h-full w-full object-cover">
+                        @else
+                            <div class="flex h-full w-full items-center justify-center text-slate-400">No Image Available</div>
+                        @endif
+                    </div>
+
+                    {{-- Title & Status --}}
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-xl font-bold text-slate-900">{{ $selectedDestination->title }}</h2>
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                                {{ ucfirst($selectedDestination->status) }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-0.5">{{ $selectedDestination->slug ?? '' }}</p>
+                    </div>
+
+                    {{-- Info Grid --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="rounded-lg border border-slate-200 p-3 bg-slate-50/50">
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Category</span>
+                            <span class="text-sm font-semibold text-slate-800">{{ $selectedDestination->category->name ?? 'Uncategorized' }}</span>
+                        </div>
+                        <div class="rounded-lg border border-slate-200 p-3 bg-slate-50/50">
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Ticket Price</span>
+                            <span class="text-sm font-semibold text-slate-800">{{ $selectedDestination->ticket_price ? '$' . number_format($selectedDestination->ticket_price, 2) : 'Free' }}</span>
+                        </div>
+                        <div class="rounded-lg border border-slate-200 p-3 bg-slate-50/50">
+                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Status</span>
+                            <span class="text-sm font-semibold text-slate-800">{{ ucfirst($selectedDestination->status) }}</span>
+                        </div>
+                    </div>
+
+                    {{-- Description & Details --}}
+                    <div class="space-y-4 text-sm text-slate-600">
+                        <div>
+                            <h4 class="font-bold text-slate-900 mb-1">Description</h4>
+                            <p>{{ $selectedDestination->description ?? 'No description provided.' }}</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 mb-1">Things to Do</h4>
+                            <p>{{ $selectedDestination->things_to_do ?? 'N/A' }}</p>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 mb-1">Things to Prepare</h4>
+                            <p>{{ $selectedDestination->things_to_prepare ?? 'N/A' }}</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                {{-- Modal Footer --}}
+                <div class="flex items-center justify-end gap-3 border-t border-slate-200 bg-slate-50 px-6 py-4">
+                    <a href="{{ route('admin.destinations.edit', $selectedDestination->destination_id) }}" class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition">
+                        Edit Destination
+                    </a>
+                    <button type="button" wire:click="$set('showViewModal', false)" class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 transition">
+                        Close
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    @endif
 
 </div>

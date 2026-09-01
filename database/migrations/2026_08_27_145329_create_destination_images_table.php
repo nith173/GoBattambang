@@ -9,10 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('destination_images', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('destination_id')->nullable();
-            $table->string('image_path')->nullable();
-            $table->integer('display_order')->default(0);
+            $table->id('image_id');
+            $table->foreignId('destination_id')->constrained('destinations', 'destination_id')->onDelete('cascade');
+            $table->string('image_url');
+            $table->boolean('is_primary')->default(false);
             $table->timestamps();
         });
     }

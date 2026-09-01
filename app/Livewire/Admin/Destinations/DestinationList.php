@@ -2,343 +2,106 @@
 
 namespace App\Livewire\Admin\Destinations;
 
-use App\Models\Category;
 use App\Models\Destination;
+use App\Models\Category;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Livewire\Attributes\Layout;
-use Livewire\Attributes\Url;
 
-// #[Layout('layouts.admin')]
 class DestinationList extends Component
 {
     use WithPagination;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Search & Filters
-    |--------------------------------------------------------------------------
-    */
+    public $search = '';
+    public $categoryFilter = '';
+    public $statusFilter = '';
 
-    #[Url(as: 'search', except: '')]
-    public string $search = '';
+    public $showViewModal = false;
+    public $selectedDestination = null;
 
-    #[Url(as: 'category', except: '')]
-    public string $categoryFilter = '';
+    protected $queryString = [
+        'search' => ['except' => ''],
+        'categoryFilter' => ['except' => ''],
+        'statusFilter' => ['except' => ''],
+    ];
 
-    #[Url(as: 'status', except: '')]
-    public string $statusFilter = '';
-
-    /*
-    |--------------------------------------------------------------------------
-    | View Modal
-    |--------------------------------------------------------------------------
-    */
-
-    public bool $showViewModal = false;
-
-    public array $selectedDestination = [];
-
-    /*
-    |--------------------------------------------------------------------------
-    | Reset Pagination
-    |--------------------------------------------------------------------------
-    */
-
-    public function updatedSearch(): void
+    public function updatingSearch()
     {
         $this->resetPage();
     }
 
-    public function updatedCategoryFilter(): void
+    public function updatingCategoryFilter()
     {
         $this->resetPage();
     }
 
-    public function updatedStatusFilter(): void
+    public function updatingStatusFilter()
     {
         $this->resetPage();
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Clear Filters
-    |--------------------------------------------------------------------------
-    */
-
-    public function clearFilters(): void
+    public function clearFilters()
     {
         $this->search = '';
         $this->categoryFilter = '';
         $this->statusFilter = '';
-
         $this->resetPage();
     }
 
-    /**
-     * --------------------------------------------------------------------------
-     * View Destination
-     * --------------------------------------------------------------------------
-     */
-    public function view(int $destinationId): void
+    public function openViewModal($id)
     {
-        $destination = Destination::with([
-            'category',
-            'images',
-        ])->find($destinationId);
-
-        if (!$destination) {
-            session()->flash(
-                'error',
-                'Destination not found.'
-            );
-
-            return;
-        }
-
-        /*
-     * Get all destination images.
-     */
-        $images = $destination->images
-            ->map(function ($image) {
-                return [
-                    'image_url' => $image->image_url,
-                    'is_primary' => (bool) $image->is_primary,
-                ];
-            })
-            ->values()
-            ->toArray();
-
-        /*
-     * Get primary image.
-     * If there is no primary image, use the first uploaded image.
-     */
-        $primaryImage = $destination->images
-            ->firstWhere('is_primary', true);
-
-        if (!$primaryImage) {
-            $primaryImage = $destination->images->first();
-        }
-
-        /*
-     * Get the image path.
-     */
-        $primaryImageUrl = $primaryImage
-            ? $primaryImage->image_url
-            : null;
-
-        /*
-     * Store selected destination.
-     */
-        $this->selectedDestination = [
-            'destination_id' => $destination->destination_id,
-
-            'title' => $destination->title,
-
-            'slug' => $destination->slug,
-
-            'description' => $destination->description,
-
-            'things_to_do' => $destination->things_to_do,
-
-            'things_to_prepare' => $destination->things_to_prepare,
-
-            'address' => $destination->address,
-
-            'latitude' => $destination->latitude,
-
-            'longitude' => $destination->longitude,
-
-            'map_link' => $destination->map_link,
-
-            'ticket_price' => $destination->ticket_price,
-
-            'status' => $destination->status,
-
-            'open_time' => $destination->open_time,
-
-            'close_time' => $destination->close_time,
-
-            'category' => $destination->category
-                ? $destination->category->name
-                : null,
-
-            'primary_image' => $primaryImageUrl,
-
-            'images' => $images,
-        ];
-
+        $this->selectedDestination = Destination::with(['category', 'images'])->find($id);
         $this->showViewModal = true;
     }
 
-    /**
-     * --------------------------------------------------------------------------
-     * Close View Modal
-     * --------------------------------------------------------------------------
-     */
-    public function closeViewModal(): void
+    public function deleteDestination($id)
     {
-        $this->showViewModal = false;
+        $destination = Destination::find($id);
 
-        $this->selectedDestination = [];
-    }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Delete Destination
-    |--------------------------------------------------------------------------
-    */
-
-    public function delete(int $destinationId): void
-    {
-        $destination = Destination::find($destinationId);
-
-        if (!$destination) {
-            session()->flash(
-                'error',
-                'Destination not found.'
-            );
-
-            return;
+        if ($destination) {
+            $destination->delete();
+            session()->flash('success', 'Destination deleted successfully.');
+        } else {
+            session()->flash('error', 'Destination not found.');
         }
-
-        $destination->delete();
-
-        session()->flash(
-            'success',
-            'Destination deleted successfully.'
-        );
-
-        $this->resetPage();
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Render
-    |--------------------------------------------------------------------------
-    */
 
     public function render()
     {
-        /*
-        |--------------------------------------------------------------------------
-        | Statistics
-        |--------------------------------------------------------------------------
-        */
+        $query = Destination::with(['category', 'images']);
+
+        if (!empty($this->search)) {
+            $query->where(function ($q) {
+                $q->where('title', 'like', '%' . $this->search . '%')
+                  ->orWhere('address', 'like', '%' . $this->search . '%');
+            });
+        }
+
+        if (!empty($this->categoryFilter)) {
+            $query->where('category_id', $this->categoryFilter);
+        }
+
+        if (!empty($this->statusFilter)) {
+            $query->where('status', $this->statusFilter);
+        }
+
+        $destinations = $query->latest()->paginate(10);
 
         $totalDestinations = Destination::count();
-
-        $activeDestinations = Destination::where(
-            'status',
-            'active'
-        )->count();
-
-        $inactiveDestinations = Destination::where(
-            'status',
-            'hidden'
-        )->count();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Category Count
-        |--------------------------------------------------------------------------
-        */
-
+        $activeDestinations = Destination::where('status', 'active')->count();
+        $inactiveDestinations = Destination::where('status', 'hidden')->count();
         $categoryCount = Category::count();
+        $categories = Category::all();
 
-        /*
-        |--------------------------------------------------------------------------
-        | Destination Query
-        |--------------------------------------------------------------------------
-        */
+        $hasActiveFilters = !empty($this->search) || !empty($this->categoryFilter) || !empty($this->statusFilter);
 
-        $destinations = Destination::with([
-            'category',
-            'images',
-        ])
-            ->when(
-                trim($this->search) !== '',
-                function ($query) {
-                    $search = trim($this->search);
-
-                    $query->where(function ($q) use ($search) {
-                        $q->where(
-                            'title',
-                            'like',
-                            '%' . $search . '%'
-                        )
-                            ->orWhere(
-                                'address',
-                                'like',
-                                '%' . $search . '%'
-                            )
-                            ->orWhere(
-                                'description',
-                                'like',
-                                '%' . $search . '%'
-                            );
-                    });
-                }
-            )
-            ->when(
-                $this->categoryFilter !== '',
-                function ($query) {
-                    $query->where(
-                        'category_id',
-                        $this->categoryFilter
-                    );
-                }
-            )
-            ->when(
-                $this->statusFilter !== '',
-                function ($query) {
-                    $query->where(
-                        'status',
-                        $this->statusFilter
-                    );
-                }
-            )
-            ->latest('destination_id')
-            ->paginate(10);
-
-        /*
-        |--------------------------------------------------------------------------
-        | Categories
-        |--------------------------------------------------------------------------
-        */
-
-        $categories = Category::orderBy('name')->get();
-
-        /*
-        |--------------------------------------------------------------------------
-        | Active Filter Check
-        |--------------------------------------------------------------------------
-        */
-
-        $hasActiveFilters =
-            trim($this->search) !== ''
-            || $this->categoryFilter !== ''
-            || $this->statusFilter !== '';
-
-        /*
-        |--------------------------------------------------------------------------
-        | Return View
-        |--------------------------------------------------------------------------
-        */
-
-        return view(
-            'livewire.admin.destinations.destination-list',
-            [
-                'destinations' => $destinations,
-                'categories' => $categories,
-
-                'totalDestinations' => $totalDestinations,
-                'activeDestinations' => $activeDestinations,
-                'inactiveDestinations' => $inactiveDestinations,
-                'categoryCount' => $categoryCount,
-
-                'hasActiveFilters' => $hasActiveFilters,
-            ]
-        );
+        return view('livewire.admin.destinations.destination-list', [
+            'destinations' => $destinations,
+            'totalDestinations' => $totalDestinations,
+            'activeDestinations' => $activeDestinations,
+            'inactiveDestinations' => $inactiveDestinations,
+            'categoryCount' => $categoryCount,
+            'categories' => $categories,
+            'hasActiveFilters' => $hasActiveFilters,
+        ]);
     }
 }

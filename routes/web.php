@@ -5,6 +5,7 @@ use App\Livewire\Admin\Categories\CategoryList;
 use App\Livewire\Admin\Categories\CategoryForm;
 use App\Livewire\Admin\Categories\CategoryView;
 use App\Livewire\Admin\Destinations\DestinationList;
+use App\Livewire\Admin\Destinations\DestinationForm;
 use App\Livewire\Admin\Reviews\ReviewList;
 
 Route::get('/', function () {
@@ -19,8 +20,8 @@ Route::get('/admin/categories/{categoryId}', CategoryView::class)->name('admin.c
 
 // Destination routes
 Route::get('/admin/destinations', DestinationList::class)->name('admin.destinations');
-Route::get('/admin/destinations/create', function () { return ''; })->name('admin.destinations.create');
-Route::get('/admin/destinations/{destinationId}/edit', function () { return ''; })->name('admin.destinations.edit');
+Route::get('/admin/destinations/create', DestinationForm::class)->name('admin.destinations.create');
+Route::get('/admin/destinations/{destinationId}/edit', DestinationForm::class)->name('admin.destinations.edit');
 
 // Review routes
 Route::get('/admin/reviews', ReviewList::class)->name('admin.reviews');

@@ -40,32 +40,32 @@ class CategoryForm extends Component
     }
 
     protected function rules(): array
-{
-    return [
-        'name' => [
-            'required',
-            'string',
-            'max:255',
-            Rule::unique('categories', 'name')
-                ->ignore($this->categoryId, 'category_id'),
-        ],
-        'description' => [
-            'nullable',
-            'string',
-            'max:1000',
-        ],
-    ];
-}
+    {
+        return [
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('categories', 'name')
+                    ->ignore($this->categoryId, 'category_id'),
+            ],
+            'description' => [
+                'nullable',
+                'string',
+                'max:1000',
+            ],
+        ];
+    }
 
     protected function messages(): array
-{
-    return [
-        'name.required' => 'Category name is required.',
-        'name.unique' => 'This category name already exists.',
-        'name.max' => 'Category name must not exceed 255 characters.',
-        'description.max' => 'Description must not exceed 1000 characters.',
-    ];
-}
+    {
+        return [
+            'name.required' => 'Category name is required.',
+            'name.unique' => 'This category name already exists.',
+            'name.max' => 'Category name must not exceed 255 characters.',
+            'description.max' => 'Description must not exceed 1000 characters.',
+        ];
+    }
 
     private function openConfirmPopup(
         string $action,
@@ -105,13 +105,15 @@ class CategoryForm extends Component
         $this->showAlertPopup = true;
     }
 
-    public function closeAlertPopup(): void { $this->showAlertPopup = false;
-if ($this->redirectAfterAlert) {
-    $this->redirectAfterAlert = false;
+    public function closeAlertPopup(): void
+    {
+        $this->showAlertPopup = false;
+        if ($this->redirectAfterAlert) {
+            $this->redirectAfterAlert = false;
 
-    $this->redirectRoute('admin.categories', navigate: true);
-}
-}
+            $this->redirectRoute('admin.categories', navigate: true);
+        }
+    }
 
     public function save(): void
     {
@@ -149,9 +151,8 @@ if ($this->redirectAfterAlert) {
         } catch (\Throwable $e) {
             report($e);
 
-            $this->showError(
-                'The operation could not be completed. Please try again.'
-            );
+            // Updated to pass the real exception message directly to the popup modal
+            $this->showError($e->getMessage());
         }
     }
 
@@ -160,26 +161,26 @@ if ($this->redirectAfterAlert) {
         $validated = $this->validate();
 
         if ($this->categoryId) {
-    $category = Category::findOrFail($this->categoryId);
+            $category = Category::findOrFail($this->categoryId);
 
-    $category->update([
-        'name' => $validated['name'],
-        'description' => $validated['description'] ?: null,
-    ]);
+            $category->update([
+                'name' => $validated['name'],
+                'description' => $validated['description'] ?: null,
+            ]);
 
-    $this->showSuccess('Category updated successfully.');
-    $this->redirectAfterAlert = true;
-    return;
-}
+            $this->showSuccess('Category updated successfully.');
+            $this->redirectAfterAlert = true;
+            return;
+        }
 
         Category::create([
-    'name' => $validated['name'],
-    'description' => $validated['description'] ?: null,
-]);
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?: null,
+        ]);
 
-$this->redirectAfterAlert = true;
+        $this->redirectAfterAlert = true;
 
-$this->showSuccess('Category created successfully.');
+        $this->showSuccess('Category created successfully.');
     }
 
     public function render()
