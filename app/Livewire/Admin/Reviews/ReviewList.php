@@ -94,9 +94,11 @@ class ReviewList extends Component
                           ->orWhere('last_name', 'like', $searchTerm)
                           ->orWhere('email', 'like', $searchTerm);
                    })
-                   ->orWhereHas('destination', function ($dq) use ($searchTerm) {
-                       $dq->where('name', 'like', $searchTerm)
-                          ->orWhere('title', 'like', $searchTerm);
+                   ->orWhereIn('destination_id', function ($sub) use ($searchTerm) {
+                       $sub->select('destination_id')
+                           ->from('destinations')
+                           ->where('name', 'like', $searchTerm)
+                           ->orWhere('title', 'like', $searchTerm);
                    })
                    ->orWhere('comment', 'like', $searchTerm);
                });
