@@ -1,6 +1,12 @@
 <div class="space-y-8">
 
     {{-- ========================================================= --}}
+    {{-- Sticky: Dashboard Header + Statistics --}}
+    {{-- ========================================================= --}}
+
+    <div class="sticky top-20 z-30 -mx-8 -mt-8 space-y-6 bg-slate-100 px-8 pb-6 pt-8">
+
+    {{-- ========================================================= --}}
     {{-- Dashboard Header --}}
     {{-- ========================================================= --}}
 
@@ -201,6 +207,8 @@
 
     </div>
 
+    </div>
+
 
     {{-- ========================================================= --}}
     {{-- Recent Bookings + Recent Reviews --}}
@@ -209,9 +217,9 @@
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
 
         {{-- Recent Bookings --}}
-        <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
+        <div class="flex h-[600px] flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
 
-            <div class="flex items-center justify-between border-b border-slate-100 px-6 py-5">
+            <div class="flex shrink-0 items-center justify-between border-b border-slate-100 px-6 py-5">
 
                 <div>
                     <h2 class="text-lg font-semibold text-slate-900">
@@ -224,7 +232,7 @@
                 </div>
 
                 <a
-                    href="#"
+                    href="{{ route('admin.bookings') }}"
                     class="text-sm font-medium text-blue-600 hover:text-blue-700">
                     View All
                 </a>
@@ -232,11 +240,11 @@
             </div>
 
 
-            <div class="overflow-x-auto">
+            <div class="flex-1 overflow-y-auto overflow-x-auto">
 
                 <table class="min-w-full divide-y divide-slate-100">
 
-                    <thead class="bg-slate-50">
+                    <thead class="sticky top-0 z-10 bg-slate-50">
 
                         <tr>
 
@@ -355,10 +363,10 @@
 
 
         {{-- Recent Reviews --}}
-        <div class="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
+        <div class="flex h-[600px] flex-col overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
 
             {{-- Header --}}
-            <div class="flex items-center justify-between border-b border-slate-100 px-6 py-5">
+            <div class="flex shrink-0 items-center justify-between border-b border-slate-100 px-6 py-5">
 
                 <div>
                     <h2 class="text-lg font-semibold text-slate-900">
@@ -371,7 +379,7 @@
                 </div>
 
                 <a
-                    href="#"
+                    href="{{ route('admin.reviews') }}"
                     class="text-sm font-medium text-blue-600 hover:text-blue-700">
                     View All
                 </a>
@@ -380,7 +388,7 @@
 
 
             {{-- Reviews --}}
-            <div class="divide-y divide-slate-100">
+            <div class="flex-1 divide-y divide-slate-100 overflow-y-auto">
 
                 @forelse ($recentReviews as $review)
 

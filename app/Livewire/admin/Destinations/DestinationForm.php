@@ -53,6 +53,7 @@ class DestinationForm extends Component
     public string $ticket_price = '';
     public bool $isFree = false;
     public string $contact_phone = '';
+    public string $vendor_telegram = '';
     public string $open_time = '';
     public string $close_time = '';
     public string $status = 'active';
@@ -141,6 +142,8 @@ class DestinationForm extends Component
             && (float) $destination->ticket_price === 0.0;
 
         $this->contact_phone = $destination->contact_phone ?? '';
+
+        $this->vendor_telegram = $destination->vendor_telegram ?? '';
 
         $this->open_time = $this->formatTime($destination->open_time);
         $this->close_time = $this->formatTime($destination->close_time);
@@ -427,6 +430,13 @@ class DestinationForm extends Component
                 'max:50',
             ],
 
+            'vendor_telegram' => [
+                'nullable',
+                'string',
+                'max:100',
+                'regex:/^[A-Za-z0-9_]{5,32}$/',
+            ],
+
             'open_time' => [
                 'nullable',
                 'date_format:H:i',
@@ -453,6 +463,9 @@ class DestinationForm extends Component
                 'mimes:jpg,jpeg,png,webp',
                 'max:5120',
             ],
+        ], [
+            'vendor_telegram.regex' =>
+                'Enter a valid Telegram username (5-32 characters, letters, numbers, and underscores only, no @ symbol).',
         ]);
 
         /*
@@ -587,6 +600,10 @@ class DestinationForm extends Component
 
             'contact_phone' => trim($this->contact_phone) !== ''
                 ? trim($this->contact_phone)
+                : null,
+
+            'vendor_telegram' => trim($this->vendor_telegram) !== ''
+                ? ltrim(trim($this->vendor_telegram), '@')
                 : null,
 
             'open_time' => $this->open_time !== ''

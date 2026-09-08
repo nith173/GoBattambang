@@ -1,24 +1,964 @@
-<div>
+<div class="h-[calc(100vh-5rem)] overflow-hidden">
 
-    {{-- Page Header --}}
-    <div class="border-b border-slate-200 bg-white px-6 py-6">
+    {{-- ================================================================
+        SUCCESS ALERT
+    ================================================================= --}}
 
-        <div class="flex items-center justify-between">
+    @if (session()->has('success'))
+        <div
+            x-data="{ show: true }"
+            x-show="show"
+            x-init="setTimeout(() => show = false, 3000)"
+            x-transition
+            class="fixed right-6 top-6 z-[9999] flex items-center gap-3 rounded-lg bg-emerald-600 px-5 py-3.5 text-sm font-medium text-white shadow-lg">
 
-            <div>
-                <h1 class="text-2xl font-bold text-slate-900">
-                    Reviews
-                </h1>
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                class="h-5 w-5 shrink-0">
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="m9 12.75 2.25 2.25L15 9.75" />
+                <circle
+                    cx="12"
+                    cy="12"
+                    r="9" />
+            </svg>
+
+            <span>{{ session('success') }}</span>
+
+        </div>
+    @endif
+
+
+    {{-- ================================================================
+        ERROR ALERT
+    ================================================================= --}}
+
+    @if (session()->has('error'))
+        <div
+            x-data="{ show: true }"
+            x-show="show"
+            x-init="setTimeout(() => show = false, 3000)"
+            x-transition
+            class="fixed right-6 top-6 z-[9999] flex items-center gap-3 rounded-lg bg-red-600 px-5 py-3.5 text-sm font-medium text-white shadow-lg">
+
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                class="h-5 w-5 shrink-0">
+
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M6 18 18 6M6 6l12 12" />
+
+            </svg>
+
+            <span>{{ session('error') }}</span>
+
+        </div>
+    @endif
+
+
+    {{-- ================================================================
+        DETAILS POPUP
+    ================================================================= --}}
+
+    @if ($showDetailsPopup && $detailsReview)
+        <div
+            class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 px-4"
+            wire:click.self="closeDetailsPopup">
+
+            <div class="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl">
+
+                <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+                    <h3 class="text-lg font-bold text-slate-900">
+                        Review {{ $detailsReview->review_id }}
+                    </h3>
+
+                    <button
+                        type="button"
+                        wire:click="closeDetailsPopup"
+                        class="text-slate-400 hover:text-slate-600">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="2"
+                            stroke="currentColor">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="max-h-[70vh] space-y-5 overflow-y-auto px-6 py-6">
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">User</p>
+                            <p class="mt-1 text-sm font-medium text-slate-900">
+                                {{ $detailsReview->user->full_name ?? '—' }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">Destination</p>
+                            <p class="mt-1 text-sm font-medium text-slate-900">
+                                {{ $detailsReview->destination->title ?? '—' }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">Rating</p>
+                            <p class="mt-1 text-sm font-medium text-amber-500">
+                                {{ str_repeat('★', $detailsReview->rating) }}{{ str_repeat('☆', 5 - $detailsReview->rating) }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">Status</p>
+                            <p class="mt-1">
+                                <span @class([
+                                    'inline-flex rounded-full px-2.5 py-1 text-xs font-semibold capitalize',
+                                    'bg-emerald-50 text-emerald-700' => $detailsReview->status === 'visible',
+                                    'bg-slate-100 text-slate-600' => $detailsReview->status === 'hidden',
+                                ])>
+                                    {{ $detailsReview->status }}
+                                </span>
+                            </p>
+                        </div>
+
+                        <div class="col-span-2">
+                            <p class="text-xs font-medium uppercase tracking-wide text-slate-400">Created At</p>
+                            <p class="mt-1 text-sm font-medium text-slate-900">
+                                {{ optional($detailsReview->created_at)->format('M d, Y g:i A') ?? '—' }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p class="mb-2 text-xs font-medium uppercase tracking-wide text-slate-400">Comment</p>
+                        <div class="whitespace-pre-line rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+                            {{ $detailsReview->comment ?? 'No comment left.' }}
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="border-t border-slate-200 px-6 py-4">
+                    <button
+                        type="button"
+                        wire:click="closeDetailsPopup"
+                        class="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700">
+                        Close
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    @endif
+
+
+    {{-- ================================================================
+        CONFIRMATION POPUP (Delete only)
+    ================================================================= --}}
+
+    @if ($showConfirmPopup)
+        <div
+            class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 px-4"
+            wire:click.self="closeConfirmPopup">
+
+            <div class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
+
+                <div class="flex justify-center pt-7">
+                    <div class="flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
+                        <svg
+                            class="h-7 w-7 text-red-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M12 9v2m0 4h.01M10.29 3.86l-7.82 13a2 2 0 001.71 3h15.64a2 2 0 001.71-3l-7.82-13a2 2 0 00-3.42 0z" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="px-6 pb-6 pt-5 text-center">
+                    <h3 class="text-lg font-bold text-slate-900">{{ $confirmTitle }}</h3>
+
+                    <p class="mt-2 text-sm leading-6 text-slate-500">{{ $confirmMessage }}</p>
+
+                    <div class="mt-6 grid grid-cols-2 gap-3">
+                        <button
+                            type="button"
+                            wire:click="closeConfirmPopup"
+                            class="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                            Cancel
+                        </button>
+
+                        <button
+                            type="button"
+                            wire:click="confirmPopupAction"
+                            wire:loading.attr="disabled"
+                            class="rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60">
+                            <span
+                                wire:loading.remove
+                                wire:target="confirmPopupAction">
+                                {{ $confirmButtonText }}
+                            </span>
+                            <span
+                                wire:loading
+                                wire:target="confirmPopupAction">
+                                Processing...
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+
+    {{-- ================================================================
+        SUCCESS / ERROR POPUP
+    ================================================================= --}}
+
+    @if ($showAlertPopup)
+        <div
+            x-data="{ show: true, closePopup() { this.show = false; $wire.closeAlertPopup(); } }"
+            x-show="show"
+            x-init="@if ($alertType === 'success') setTimeout(() => closePopup(), 1500) @endif"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95"
+            x-transition:enter-end="opacity-100 scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 scale-100"
+            x-transition:leave-end="opacity-0 scale-95"
+            class="fixed inset-0 z-[10000] flex items-center justify-center bg-black/40 px-4">
+
+            <div class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
+                <div class="px-6 pb-6 pt-7 text-center">
+
+                    @if ($alertType === 'success')
+                        <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100">
+                            <svg
+                                class="h-7 w-7 text-green-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                    @else
+                        <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-red-100">
+                            <svg
+                                class="h-7 w-7 text-red-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </div>
+                    @endif
+
+                    <h3 class="mt-4 text-lg font-bold text-slate-900">{{ $alertTitle }}</h3>
+                    <p class="mt-2 text-sm leading-6 text-slate-500">{{ $alertMessage }}</p>
+
+                    @if ($alertType !== 'success')
+                        <button
+                            type="button"
+                            x-on:click="closePopup()"
+                            class="mt-6 w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700">
+                            OK
+                        </button>
+                    @endif
+
+                </div>
+            </div>
+        </div>
+    @endif
+
+
+    {{-- ================================================================
+        FIXED PAGE CONTENT
+        Header + Search/Filter + Table
+    ================================================================= --}}
+
+    <div class="flex h-full min-h-0 flex-col bg-slate-50">
+
+
+        {{-- ============================================================
+            PAGE HEADER
+        ============================================================= --}}
+
+        <div class="shrink-0 border-b border-slate-200 bg-white">
+            <div class="px-6 py-5">
+
+                <a
+                    href="{{ route('admin.dashboard') }}"
+                    class="mb-3 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-blue-600">
+
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.8"
+                        stroke="currentColor"
+                        class="h-4 w-4">
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="m15 18-6-6 6-6" />
+                    </svg>
+
+                    Dashboard
+                </a>
+
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900">Reviews</h1>
 
                 <p class="mt-1 text-sm text-slate-500">
-                    Manage customer reviews and feedback.
+                    Moderate reviews left by users on destinations.
                 </p>
+
+            </div>
+        </div>
+
+
+        {{-- ============================================================
+            SCROLL-FREE TOP CONTENT
+            Search/Filter
+        ============================================================= --}}
+
+        <div class="shrink-0 space-y-5 px-6 py-6">
+
+            <div class="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+
+                <div class="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-end">
+
+                    {{-- SEARCH --}}
+                    <div class="flex-1 lg:min-w-[220px]">
+                        <label
+                            for="review-search"
+                            class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            Search
+                        </label>
+
+                        <div class="relative">
+                            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.8"
+                                    stroke="currentColor"
+                                    class="h-4 w-4 text-slate-400">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="m21 21-4.35-4.35m1.35-5.4a6.75 6.75 0 1 1-13.5 0 6.75 6.75 0 0 1 13.5 0Z" />
+                                </svg>
+                            </div>
+
+                            <input
+                                id="review-search"
+                                type="text"
+                                wire:model.live.debounce.300ms="search"
+                                placeholder="User or destination name..."
+                                class="w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-9 pr-4 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />
+                        </div>
+                    </div>
+
+                    {{-- RATING --}}
+                    <div class="w-full lg:w-40">
+                        <label
+                            for="rating-filter"
+                            class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            Rating
+                        </label>
+
+                        <select
+                            id="rating-filter"
+                            wire:model.live="ratingFilter"
+                            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                            <option value="all">All</option>
+                            <option value="5">★★★★★ (5)</option>
+                            <option value="4">★★★★☆ (4)</option>
+                            <option value="3">★★★☆☆ (3)</option>
+                            <option value="2">★★☆☆☆ (2)</option>
+                            <option value="1">★☆☆☆☆ (1)</option>
+                        </select>
+                    </div>
+
+                    {{-- STATUS --}}
+                    <div class="w-full lg:w-40">
+                        <label
+                            for="status-filter"
+                            class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            Status
+                        </label>
+
+                        <select
+                            id="status-filter"
+                            wire:model.live="statusFilter"
+                            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                            <option value="all">All</option>
+                            <option value="visible">Visible</option>
+                            <option value="hidden">Hidden</option>
+                        </select>
+                    </div>
+
+                    {{-- DATE FROM --}}
+                    <div class="w-full lg:w-44">
+                        <label
+                            for="date-from"
+                            class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            Created From
+                        </label>
+
+                        <input
+                            id="date-from"
+                            type="date"
+                            wire:model.live="dateFrom"
+                            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />
+                    </div>
+
+                    {{-- DATE TO --}}
+                    <div class="w-full lg:w-44">
+                        <label
+                            for="date-to"
+                            class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+                            Created To
+                        </label>
+
+                        <input
+                            id="date-to"
+                            type="date"
+                            wire:model.live="dateTo"
+                            class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" />
+                    </div>
+
+                    {{-- CLEAR --}}
+                    @if ($search !== '' || $ratingFilter !== 'all' || $statusFilter !== 'all' || $dateFrom !== '' || $dateTo !== '')
+                        <button
+                            type="button"
+                            wire:click="clearFilters"
+                            class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50">
+
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke-width="1.8"
+                                stroke="currentColor"
+                                class="h-4 w-4">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M6 18 18 6M6 6l12 12" />
+                            </svg>
+
+                            Clear
+                        </button>
+                    @endif
+
+                </div>
+
             </div>
 
-            <div class="rounded-lg bg-slate-100 px-4 py-2.5">
-                <span class="text-sm font-semibold text-slate-700">
-                    {{ $reviews->count() }} reviews
-                </span>
+        </div>
+
+
+        {{-- ================================================================
+            TABLE AREA
+        ================================================================= --}}
+
+        <div class="flex min-h-0 flex-1 flex-col px-6 pb-6">
+
+            <div class="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+
+                {{-- TABLE TITLE / RESULT COUNT --}}
+                <div class="shrink-0 border-b border-slate-200 bg-white px-5 py-4">
+                    <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+
+                        <div>
+                            <h2 class="text-base font-bold uppercase tracking-wide text-slate-900">Reviews</h2>
+                            <p class="mt-0.5 text-sm text-slate-500">Reviews left by users on destinations.</p>
+                        </div>
+
+                        @if ($reviews->total() > 0)
+                            <p class="text-sm text-slate-500">
+                                Showing
+                                <span class="font-semibold text-slate-700">{{ $reviews->firstItem() }}</span>
+                                -
+                                <span class="font-semibold text-slate-700">{{ $reviews->lastItem() }}</span>
+                                of
+                                <span class="font-semibold text-slate-700">{{ $reviews->total() }}</span>
+                            </p>
+                        @endif
+
+                    </div>
+                </div>
+
+
+                {{-- EMPTY STATE --}}
+                @if ($reviews->isEmpty())
+
+                    <div class="flex flex-1 items-center justify-center px-6 py-16 text-center">
+                        <div>
+                            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-slate-100">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.6"
+                                    stroke="currentColor"
+                                    class="h-7 w-7 text-slate-400">
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.563.563 0 0 0-.586 0L6.98 21.539a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+                                </svg>
+                            </div>
+
+                            @if ($search !== '' || $ratingFilter !== 'all' || $statusFilter !== 'all' || $dateFrom !== '' || $dateTo !== '')
+                                <h3 class="mt-4 text-base font-semibold text-slate-900">No reviews found</h3>
+                                <p class="mx-auto mt-1 max-w-md text-sm text-slate-500">No reviews match your current search or filters.</p>
+
+                                <button
+                                    type="button"
+                                    wire:click="clearFilters"
+                                    class="mt-5 inline-flex items-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700">
+                                    Clear Filters
+                                </button>
+                            @else
+                                <h3 class="mt-4 text-base font-semibold text-slate-900">No reviews yet</h3>
+                                <p class="mx-auto mt-1 max-w-md text-sm text-slate-500">Reviews left by users will show up here.</p>
+                            @endif
+
+                        </div>
+                    </div>
+
+                @else
+
+                    <div class="min-h-0 flex-1 overflow-auto">
+
+                        <table class="min-w-full">
+
+                            <thead class="sticky top-0 z-30 border-b border-slate-200 bg-slate-50">
+                                <tr>
+                                    <th class="w-12 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">#</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">User</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Destination</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Rating</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Comment</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Status</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">Created</th>
+                                    <th class="w-20 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody class="divide-y divide-slate-100 bg-white">
+
+                                @foreach ($reviews as $review)
+
+                                    @php
+                                        $rowNumber = ($reviews->currentPage() - 1) * $reviews->perPage() + $loop->iteration;
+                                    @endphp
+
+                                    <tr
+                                        wire:key="review-{{ $review->review_id }}"
+                                        class="transition hover:bg-slate-50">
+
+                                        <td class="px-4 py-3 text-center text-sm font-medium text-slate-500">
+                                            {{ $rowNumber }}
+                                        </td>
+
+                                        <td class="px-4 py-3">
+                                            <p class="max-w-[180px] truncate text-sm font-semibold text-slate-900">
+                                                {{ $review->user->full_name ?? '—' }}
+                                            </p>
+                                        </td>
+
+                                        <td class="px-4 py-3">
+                                            <p class="max-w-[180px] truncate text-sm text-slate-700">
+                                                {{ $review->destination->title ?? '—' }}
+                                            </p>
+                                        </td>
+
+                                        <td class="whitespace-nowrap px-4 py-3 text-sm text-amber-500">
+                                            {{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}
+                                        </td>
+
+                                        <td class="max-w-xs truncate px-4 py-3 text-sm text-slate-700">
+                                            {{ $review->comment ?? '—' }}
+                                        </td>
+
+                                        <td class="whitespace-nowrap px-4 py-3">
+                                            @if ($review->status === 'visible')
+                                                <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                                                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                                                    Visible
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">
+                                                    <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span>
+                                                    Hidden
+                                                </span>
+                                            @endif
+                                        </td>
+
+                                        <td class="whitespace-nowrap px-4 py-3 text-sm text-slate-500">
+                                            {{ optional($review->created_at)->format('M d, Y') ?? '—' }}
+                                        </td>
+
+                                        <td class="px-4 py-3 text-center">
+
+                                            <div
+                                                x-data="{ open: false }"
+                                                class="relative inline-block text-left">
+
+                                                <button
+                                                    type="button"
+                                                    @click="open = !open"
+                                                    @keydown.escape.window="open = false"
+                                                    class="inline-flex h-9 w-9 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                                                    aria-label="Review actions">
+
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                        class="h-5 w-5">
+                                                        <circle
+                                                            cx="12"
+                                                            cy="5"
+                                                            r="1.7" />
+                                                        <circle
+                                                            cx="12"
+                                                            cy="12"
+                                                            r="1.7" />
+                                                        <circle
+                                                            cx="12"
+                                                            cy="19"
+                                                            r="1.7" />
+                                                    </svg>
+
+                                                </button>
+
+                                                <div
+                                                    x-show="open"
+                                                    x-cloak
+                                                    @click.outside="open = false"
+                                                    x-transition
+                                                    class="absolute right-0 z-[100] mt-2 w-36 origin-top-right rounded-lg border border-slate-200 bg-white py-1 text-left shadow-lg">
+
+                                                    <button
+                                                        type="button"
+                                                        wire:click="viewDetails({{ $review->review_id }})"
+                                                        @click="open = false"
+                                                        class="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">
+
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            stroke-width="1.7"
+                                                            stroke="currentColor"
+                                                            class="h-4 w-4 text-slate-500">
+                                                            <path
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                                d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                                            <path
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                                        </svg>
+
+                                                        View
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        wire:click="toggleStatus({{ $review->review_id }})"
+                                                        @click="open = false"
+                                                        class="flex w-full items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">
+
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            stroke-width="1.7"
+                                                            stroke="currentColor"
+                                                            class="h-4 w-4 text-slate-500">
+                                                            <path
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                                d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.243 4.243L9.88 9.88" />
+                                                        </svg>
+
+                                                        {{ $review->status === 'visible' ? 'Hide' : 'Unhide' }}
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        wire:click="deleteReview({{ $review->review_id }})"
+                                                        @click="open = false"
+                                                        class="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50">
+
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            stroke-width="1.7"
+                                                            stroke="currentColor"
+                                                            class="h-4 w-4 text-red-500">
+                                                            <path
+                                                                stroke-linecap="round"
+                                                                stroke-linejoin="round"
+                                                                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                                        </svg>
+
+                                                        Delete
+                                                    </button>
+
+                                                </div>
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+
+                                @endforeach
+
+                            </tbody>
+
+                        </table>
+
+
+                        {{-- ====================================================
+                            TABLE FOOTER / PAGINATION
+
+                            IMPORTANT:
+                            This is INSIDE overflow-auto.
+
+                            Therefore:
+                            - It does NOT stay fixed.
+                            - It does NOT stay sticky.
+                            - It scrolls with the table content.
+                        ===================================================== --}}
+
+                        <div class="flex flex-col gap-4 border-t border-slate-200 bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+
+
+                            {{-- Showing X - Y of Z --}}
+
+                            <div class="text-sm text-slate-500">
+
+                                Showing
+
+                                <span class="font-medium text-slate-900">
+                                    {{ $reviews->firstItem() ?? 0 }}
+                                </span>
+
+                                -
+
+                                <span class="font-medium text-slate-900">
+                                    {{ $reviews->lastItem() ?? 0 }}
+                                </span>
+
+                                of
+
+                                <span class="font-medium text-slate-900">
+                                    {{ $reviews->total() }}
+                                </span>
+
+                            </div>
+
+
+                            {{-- ====================================================
+                                PAGINATION
+                            ===================================================== --}}
+
+                            <div class="flex items-center gap-2">
+
+
+                                {{-- Previous --}}
+
+                                @if ($reviews->onFirstPage())
+
+                                    <button
+                                        type="button"
+                                        disabled
+                                        class="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-300"
+                                        aria-label="Previous page">
+
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="h-4 w-4"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            stroke-width="2">
+
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M15 19l-7-7 7-7" />
+
+                                        </svg>
+
+                                    </button>
+
+                                @else
+
+                                    <button
+                                        type="button"
+                                        wire:click="previousPage"
+                                        wire:loading.attr="disabled"
+                                        class="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+                                        aria-label="Previous page">
+
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="h-4 w-4"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            stroke-width="2">
+
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M15 19l-7-7 7-7" />
+
+                                        </svg>
+
+                                    </button>
+
+                                @endif
+
+
+                                {{-- Page Numbers --}}
+
+                                @for ($page = 1; $page <= max(1, $reviews->lastPage()); $page++)
+
+                                    @if ($page === $reviews->currentPage())
+
+                                        <button
+                                            type="button"
+                                            wire:key="page-{{ $page }}"
+                                            class="flex h-10 min-w-10 items-center justify-center rounded-lg bg-blue-600 px-3 text-sm font-semibold text-white shadow-sm"
+                                            aria-current="page">
+
+                                            {{ $page }}
+
+                                        </button>
+
+                                    @else
+
+                                        <button
+                                            type="button"
+                                            wire:key="page-{{ $page }}"
+                                            wire:click="gotoPage({{ $page }})"
+                                            class="flex h-10 min-w-10 items-center justify-center rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-600 transition hover:bg-slate-50">
+
+                                            {{ $page }}
+
+                                        </button>
+
+                                    @endif
+
+                                @endfor
+
+
+                                {{-- Next --}}
+
+                                @if ($reviews->hasMorePages())
+
+                                    <button
+                                        type="button"
+                                        wire:click="nextPage"
+                                        wire:loading.attr="disabled"
+                                        class="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+                                        aria-label="Next page">
+
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="h-4 w-4"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            stroke-width="2">
+
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M9 5l7 7-7 7" />
+
+                                        </svg>
+
+                                    </button>
+
+                                @else
+
+                                    <button
+                                        type="button"
+                                        disabled
+                                        class="flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-300"
+                                        aria-label="Next page">
+
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="h-4 w-4"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                            stroke-width="2">
+
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                d="M9 5l7 7-7 7" />
+
+                                        </svg>
+
+                                    </button>
+
+                                @endif
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                @endif
+
             </div>
 
         </div>
@@ -26,281 +966,36 @@
     </div>
 
 
-    {{-- Review Content --}}
-    <div class="bg-slate-50 p-6">
-
-        <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
-
-            {{-- Table Header --}}
-            <div class="border-b border-slate-100 px-6 py-5">
-
-                <h2 class="text-lg font-semibold text-slate-900">
-                    All Reviews
-                </h2>
-
-                <p class="mt-1 text-sm text-slate-500">
-                    View reviewer information, ratings, comments, and status.
-                </p>
-
-            </div>
-
-
-            {{-- Table --}}
-            <div class="overflow-x-auto">
-
-                <table class="min-w-full divide-y divide-slate-100">
-
-                    <thead class="bg-slate-50">
-
-                        <tr>
-
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                                Reviewer
-                            </th>
-
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                                Destination
-                            </th>
-
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                                Rating
-                            </th>
-
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                                Comment
-                            </th>
-
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                                Status
-                            </th>
-
-                            <th class="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
-                                Date
-                            </th>
-
-                            <th class="px-6 py-4 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
-                                Actions
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody class="divide-y divide-slate-100 bg-white">
-
-                        @forelse ($reviews as $review)
-
-                            <tr class="transition hover:bg-slate-50">
-
-                                {{-- Reviewer --}}
-                                <td class="whitespace-nowrap px-6 py-4">
-
-                                    @if ($review->user)
-
-                                        <div class="flex items-center gap-3">
-
-                                            @if ($review->user->profile_picture)
-
-                                                <img
-                                                    src="{{ asset('storage/' . $review->user->profile_picture) }}"
-                                                    alt="{{ $review->user->first_name }} {{ $review->user->last_name }}"
-                                                    class="h-10 w-10 rounded-full object-cover"
-                                                >
-
-                                            @else
-
-                                                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-sm font-bold text-blue-600">
-                                                    {{ strtoupper(substr($review->user->first_name, 0, 1)) }}
-                                                </div>
-
-                                            @endif
-
-                                            <div>
-
-                                                <p class="font-semibold text-slate-900">
-                                                    {{ $review->user->first_name }}
-                                                    {{ $review->user->last_name }}
-                                                </p>
-
-                                                <p class="mt-1 text-xs text-slate-400">
-                                                    {{ $review->user->email }}
-                                                </p>
-
-                                            </div>
-
-                                        </div>
-
-                                    @else
-
-                                        <span class="text-sm text-slate-400">
-                                            User not found
-                                        </span>
-
-                                    @endif
-
-                                </td>
-
-
-                                {{-- Destination --}}
-                                <td class="px-6 py-4">
-
-                                    @if ($review->destination)
-
-                                        <p class="max-w-xs truncate text-sm font-medium text-slate-800">
-                                            {{ $review->destination->title }}
-                                        </p>
-
-                                    @else
-
-                                        <span class="text-sm text-slate-400">
-                                            Destination not found
-                                        </span>
-
-                                    @endif
-
-                                </td>
-
-
-                                {{-- Rating --}}
-                                <td class="whitespace-nowrap px-6 py-4">
-
-                                    <div class="flex items-center gap-2">
-
-                                        <div class="flex items-center gap-0.5">
-
-                                            @for ($star = 1; $star <= 5; $star++)
-
-                                                @if ($star <= $review->rating)
-
-                                                    <svg
-                                                        class="h-4 w-4 fill-current text-amber-400"
-                                                        viewBox="0 0 24 24"
-                                                        aria-hidden="true"
-                                                    >
-                                                        <path d="M12 2.5l2.91 5.9 6.51.95-4.71 4.59 1.11 6.49L12 17.37l-5.82 3.06 1.11-6.49-4.71-4.59 6.51-.95L12 2.5z"/>
-                                                    </svg>
-
-                                                @else
-
-                                                    <svg
-                                                        class="h-4 w-4 fill-current text-slate-200"
-                                                        viewBox="0 0 24 24"
-                                                        aria-hidden="true"
-                                                    >
-                                                        <path d="M12 2.5l2.91 5.9 6.51.95-4.71 4.59 1.11 6.49L12 17.37l-5.82 3.06 1.11-6.49-4.71-4.59 6.51-.95L12 2.5z"/>
-                                                    </svg>
-
-                                                @endif
-
-                                            @endfor
-
-                                        </div>
-
-                                        <span class="text-sm font-semibold text-slate-700">
-                                            {{ $review->rating }}/5
-                                        </span>
-
-                                    </div>
-
-                                </td>
-
-
-                                {{-- Comment --}}
-                                <td class="max-w-sm px-6 py-4">
-
-                                    <p class="line-clamp-2 text-sm text-slate-600">
-                                        {{ $review->comment ?: 'No comment' }}
-                                    </p>
-
-                                </td>
-
-
-                                {{-- Status --}}
-                                <td class="whitespace-nowrap px-6 py-4">
-
-                                    @if ($review->status === 'visible')
-
-                                        <span class="inline-flex rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-600">
-                                            Visible
-                                        </span>
-
-                                    @elseif ($review->status === 'hidden')
-
-                                        <span class="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-500">
-                                            Hidden
-                                        </span>
-
-                                    @else
-
-                                        <span class="inline-flex rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-600">
-                                            {{ ucfirst($review->status ?? 'Unknown') }}
-                                        </span>
-
-                                    @endif
-
-                                </td>
-
-
-                                {{-- Date --}}
-                                <td class="whitespace-nowrap px-6 py-4">
-
-                                    <span class="text-sm text-slate-600">
-                                        {{ $review->created_at?->format('d M Y') ?? '—' }}
-                                    </span>
-
-                                </td>
-
-
-                                {{-- Actions --}}
-                                <td class="whitespace-nowrap px-6 py-4 text-right">
-
-                                    <button
-                                        type="button"
-                                        class="mr-3 text-sm font-medium text-blue-600 hover:text-blue-700"
-                                    >
-                                        Edit
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        class="text-sm font-medium text-red-500 hover:text-red-600"
-                                    >
-                                        Delete
-                                    </button>
-
-                                </td>
-
-                            </tr>
-
-                        @empty
-
-                            <tr>
-
-                                <td
-                                    colspan="7"
-                                    class="px-6 py-12 text-center"
-                                >
-
-                                    <p class="text-sm font-medium text-slate-500">
-                                        No reviews found.
-                                    </p>
-
-                                    <p class="mt-1 text-xs text-slate-400">
-                                        There are currently no customer reviews.
-                                    </p>
-
-                                </td>
-
-                            </tr>
-
-                        @endforelse
-
-                    </tbody>
-
-                </table>
-
-            </div>
+    {{-- ================================================================
+        LOADING
+    ================================================================= --}}
+
+    <div
+        wire:loading.flex
+        wire:target="search, ratingFilter, statusFilter, dateFrom, dateTo, clearFilters, viewDetails, toggleStatus, deleteReview"
+        class="fixed inset-0 z-[9998] hidden items-center justify-center bg-slate-900/10 backdrop-blur-[1px]">
+
+        <div class="flex items-center gap-3 rounded-lg bg-white px-5 py-4 text-sm font-medium text-slate-700 shadow-xl">
+
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                class="h-5 w-5 animate-spin">
+                <circle
+                    cx="12"
+                    cy="12"
+                    r="9"
+                    stroke="currentColor"
+                    stroke-width="3"
+                    class="opacity-25" />
+                <path
+                    fill="currentColor"
+                    d="M4 12a8 8 0 0 1 8-8v3a5 5 0 0 0-5 5H4Z"
+                    class="opacity-75" />
+            </svg>
+
+            Loading...
 
         </div>
 

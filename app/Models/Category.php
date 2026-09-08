@@ -4,25 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Traits\LogsActivity;
 
 class Category extends Model
 {
+    use LogsActivity;
+
     protected $table = 'categories';
 
     protected $primaryKey = 'category_id';
 
-    public $incrementing = true;
-
-    protected $keyType = 'int';
-
-    // Your table has created_at but NO updated_at.
-    public $timestamps = true;
-
-    const UPDATED_AT = null;
+    public $timestamps = false;
 
     protected $fillable = [
         'name',
         'description',
+        'created_at',
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
     ];
 
     public function destinations(): HasMany

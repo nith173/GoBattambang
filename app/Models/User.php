@@ -2,27 +2,17 @@
 
 namespace App\Models;
 
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use Notifiable;
 
     protected $table = 'users';
 
     protected $primaryKey = 'user_id';
 
-    public $incrementing = true;
-
-    protected $keyType = 'int';
-
-    /**
-     * Mass Assignable
-     */
     protected $fillable = [
         'first_name',
         'last_name',
@@ -34,41 +24,38 @@ class User extends Authenticatable
         'account_status',
     ];
 
-    /**
-     * Hidden
-     */
     protected $hidden = [
         'password_hash',
-        'remember_token',
     ];
 
-    /**
-     * Casts
-     */
-    protected function casts(): array
-    {
-        return [
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime',
-        ];
-    }
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
-    /**
-     * Laravel authentication uses "password" by default.
-     * Your database column is "password_hash".
-     */
-    public function getAuthPassword()
+    /*
+    |--------------------------------------------------------------------------
+    | Auth: password column override
+    |--------------------------------------------------------------------------
+    | Your users table stores the hash in `password_hash`, not Laravel's
+    | default `password` column. This tells Auth::attempt() / the guard
+    | where to actually find it (this is the method LoginController's
+    | comment refers to).
+    */
+
+    public function getAuthPassword(): string
     {
         return $this->password_hash;
     }
 
-    /**
-     * Return the user's full name.
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Full Name
+    |--------------------------------------------------------------------------
+    */
+
     public function getFullNameAttribute(): string
     {
-        return trim(
-            $this->first_name . ' ' . $this->last_name
-        );
+        return trim($this->first_name . ' ' . $this->last_name);
     }
 }

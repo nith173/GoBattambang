@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Traits\LogsActivity;
 
 class Destination extends Model
 {
     use HasFactory;
+    use LogsActivity;
 
     protected $table = 'destinations';
     protected $primaryKey = 'destination_id';
@@ -28,9 +30,15 @@ class Destination extends Model
         'map_link',
         'ticket_price',
         'contact_phone',
+        'vendor_telegram',
         'open_time',
         'close_time',
         'status',
+    ];
+
+    protected $casts = [
+        'open_time' => 'datetime:H:i',
+        'close_time' => 'datetime:H:i',
     ];
 
     public function category(): BelongsTo

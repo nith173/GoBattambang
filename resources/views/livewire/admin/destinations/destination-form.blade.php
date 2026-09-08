@@ -822,6 +822,38 @@
 
                     </div>
 
+
+                    {{-- Vendor Telegram --}}
+                    <div>
+
+                        <label class="mb-2 block text-sm font-medium text-slate-700">
+                            Vendor Telegram Username
+                        </label>
+
+                        <div class="relative">
+                            <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-400">
+                                @
+                            </span>
+
+                            <input
+                                type="text"
+                                wire:model="vendor_telegram"
+                                placeholder="bopha_guesthouse"
+                                class="w-full rounded-xl border border-slate-300 py-3 pl-8 pr-4 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                        </div>
+
+                        <p class="mt-1 text-xs text-slate-500">
+                            Used to send booking requests directly to the vendor on Telegram. Enter the username only, without the @ symbol.
+                        </p>
+
+                        @error('vendor_telegram')
+                        <p class="mt-1 text-sm text-red-600">
+                            {{ $message }}
+                        </p>
+                        @enderror
+
+                    </div>
+
                 </div>
             </div>
 
